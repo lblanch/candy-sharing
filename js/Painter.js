@@ -27,14 +27,21 @@ class Painter {
         this.canvasContext.drawImage(this.imageLoader.pics[this.backgroundIndex], 0, 0);
     }
 
-    drawBitmapCenteredWithRotation(useBitmap, atX, atY, withAng) {
-        this.canvasContext.save();
-        this.canvasContext.translate(atX, atY);
-        this.canvasContext.rotate(withAng);
-        this.canvasContext.drawImage(useBitmap, -useBitmap.width/2, -useBitmap.height/2);
-        this.canvasContext.restore();
+    drawTile(tile, drawAtX, drawAtY) {
+        this.canvasContext.drawImage(this.imageLoader.pics[this.tileOffset + tile], drawAtX, drawAtY);
     }
     
+    drawCandy(auxCandy, x, y, w, h) {
+        let exImg = this.imageLoader.pics[auxCandy.candyPicIndex + this.candiesOffset];
+        this.canvasContext.drawImage(exImg, x-((exImg.width-w)/2), y-((exImg.height-h)/2));
+    }
+
+    drawExplosion(auxCandy, x, y, w, h) {
+        let exImg = this.imageLoader.pics[auxCandy.explosionPicIndex + auxCandy.isEaten + this.candiesOffset];
+        this.canvasContext.drawImage(exImg, x-((exImg.width-w)/2), y-((exImg.height-h)/2));
+        auxCandy.nextEaten();
+    }
+
     colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
         this.canvasContext.fillStyle = fillColor;
         this.canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);

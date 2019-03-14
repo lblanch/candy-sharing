@@ -1,10 +1,12 @@
 import Painter from './Painter.js';
+import CandyBag from './CandyBag.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
 let countingFramesGenerating = 1;
 let totalPoints = 0;
 let painter = null;
+let candyBag = null;
 
 const SAME_CANDY_POINTS = 15;
 const SAME_COLOR_POINTS = 15;
@@ -27,25 +29,20 @@ window.onload = function () {
     painter.colorText("LOADING IMAGES", canvas.width/2, canvas.height/2, 'red');
     
     //define function to be called after loading the images, the one that starts de game
-    painter.imageLoader.onDoneLoading(thisIsATest);
+    painter.imageLoader.onDoneLoading(startGame);
     painter.loadGameImages();
-    //loadImages((CANDY_TYPES_ROWS.length * CANDY_COLORS_COLS.length), FRIEND_STATUS.length, (CANDY_COLORS_COLS.length * CANDY_EXPLOSIONS_FRAMES));
 }
 
-function thisIsATest() {
-    console.log("images loaded!");
-    painter.drawBackground();
-}
-
-/*
-function imageLoadingDoneSoStartGame() {
+function startGame() {
     //1000 = 1 sec in milisecs
-    setInterval(updateAll, 1000/FRAMES_PER_SECOND);
+    setInterval(tick, 1000/FRAMES_PER_SECOND);
 
-    setupInput();
+    //setupInput();
 
-    //candyBag.reset() use this in future if there's more than
-    candyBag.fill(null);
+    candyBag = new CandyBag(painter);
+    candyBag.reset();
+    //candyBag.generateCandies();
+    //candyBag.fill(null);
 
     //colorRect(0, 0, canvas.width, canvas.height, 'white');
     //generateCandies();
@@ -54,31 +51,29 @@ function imageLoadingDoneSoStartGame() {
     //drawFriend();
 }
 
-function updateAll() {
-    var fallingTime = false;
+function tick() {
+    let fallingTime = false;
 
     if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
         fallingTime = true;
         countingFramesFalling = 1;
-        //for (var col = 0; col < CANDY_BAG_COLS; col++) {
-        //    console.log("col no: " + col + " empty space in index: " + lowestFreeSpace[col]);
-        //}
     } else {
         countingFramesFalling++;
     }
+
     if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
-        generateCandies();
+        candyBag.generateCandies();
         countingFramesGenerating = 1;
     } else {
         countingFramesGenerating++;
     }
-    canvasContext.drawImage(backgroundPic, 0, 0);
-    drawCandyBag(fallingTime);
-    drawFriendUI(300, 25);
+    painter.drawBackground();
+    candyBag.drawCandyBag(fallingTime);
+    //painter.drawFriendUI(300, 25);
 }
 
 //will return int between 0 and max-1
-function getRandomInt(max) {
+export function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
-*/
+
