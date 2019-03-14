@@ -1,9 +1,10 @@
-import Wizard from '/js/imageLoading';
+import Painter from './Painter.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
 let countingFramesGenerating = 1;
 let totalPoints = 0;
+let painter = null;
 
 const SAME_CANDY_POINTS = 15;
 const SAME_COLOR_POINTS = 15;
@@ -19,13 +20,24 @@ window.onload = function () {
     //this is the graphics buffer, where we can draw stuff
     canvasContext = canvas.getContext('2d');
 
-    //show message while we wait to go image loading
-    colorRect(0, 0, canvas.width, canvas.height, 'black');
-    colorText("LOADING IMAGES", canvas.width/2, canvas.height/2, 'black');
+    painter = new Painter(canvasContext, document);
 
-    loadImages((CANDY_TYPES_ROWS.length * CANDY_COLORS_COLS.length), FRIEND_STATUS.length, (CANDY_COLORS_COLS.length * CANDY_EXPLOSIONS_FRAMES));
+    //show message while we wait to go image loading
+    painter.colorRect(0, 0, canvas.width, canvas.height, 'black');
+    painter.colorText("LOADING IMAGES", canvas.width/2, canvas.height/2, 'red');
+    
+    //define function to be called after loading the images, the one that starts de game
+    painter.imageLoader.onDoneLoading(thisIsATest);
+    painter.loadGameImages();
+    //loadImages((CANDY_TYPES_ROWS.length * CANDY_COLORS_COLS.length), FRIEND_STATUS.length, (CANDY_COLORS_COLS.length * CANDY_EXPLOSIONS_FRAMES));
 }
 
+function thisIsATest() {
+    console.log("images loaded!");
+    painter.drawBackground();
+}
+
+/*
 function imageLoadingDoneSoStartGame() {
     //1000 = 1 sec in milisecs
     setInterval(updateAll, 1000/FRAMES_PER_SECOND);
@@ -36,10 +48,10 @@ function imageLoadingDoneSoStartGame() {
     candyBag.fill(null);
 
     //colorRect(0, 0, canvas.width, canvas.height, 'white');
-    /*generateCandies();
-    colorRect(0, 0, canvas.width, canvas.height, 'blue');
-    drawCandyBag(false);
-    drawFriend();*/
+    //generateCandies();
+    //colorRect(0, 0, canvas.width, canvas.height, 'blue');
+    //drawCandyBag(false);
+    //drawFriend();
 }
 
 function updateAll() {
@@ -48,9 +60,9 @@ function updateAll() {
     if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
         fallingTime = true;
         countingFramesFalling = 1;
-        /*for (var col = 0; col < CANDY_BAG_COLS; col++) {
-            console.log("col no: " + col + " empty space in index: " + lowestFreeSpace[col]);
-        }*/
+        //for (var col = 0; col < CANDY_BAG_COLS; col++) {
+        //    console.log("col no: " + col + " empty space in index: " + lowestFreeSpace[col]);
+        //}
     } else {
         countingFramesFalling++;
     }
@@ -69,3 +81,4 @@ function updateAll() {
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
+*/
