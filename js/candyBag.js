@@ -49,11 +49,28 @@ class CandyBag {
         }
     }
     
+    processClickedBagPosition(mouseX, mouseY) {
+        if ((mouseX > BAG_LEFT_CORNER_X && mouseX <= ((CANDY_BAG_COLS * TILE_SIZE_W) + BAG_LEFT_CORNER_X)) && 
+            (mouseY > BAG_LEFT_CORNER_Y && mouseY <= ((CANDY_BAG_ROWS * TILE_SIZE_H) + BAG_LEFT_CORNER_Y))) {
+                
+                let clickedX = Math.floor((mouseX - BAG_LEFT_CORNER_X)/TILE_SIZE_W);
+                let clickedY = Math.floor((mouseY - BAG_LEFT_CORNER_Y)/TILE_SIZE_H);
+                let clickedIndex = clickedY * CANDY_BAG_COLS + clickedX;
+                
+                if (this.candyBag[clickedIndex] != null) {
+                    this.closeCandies.push(clickedIndex);
+                    this.candyBag[clickedIndex].isEaten++;
+                    while (this.closeCandies.length > 0) {
+                        this.checkCloseByCandies(this.closeCandies.length - 1, this.candyBag[clickedIndex].candyColor);
+                    }
+                }
+        }
+    }
+
     checkCloseByCandies(positionToBeChecked, colorToBeChecked) {
         let currentPosition = this.closeCandies[positionToBeChecked];
     
         this.closeCandies.splice(positionToBeChecked, 1);
-        currentColor = this.candyBag[currentPosition].candyColor;
     
         //if it's not in the first row, we check the candy above
         if(currentPosition >= CANDY_BAG_COLS) {
@@ -84,7 +101,7 @@ class CandyBag {
                     for (let i=(position % CANDY_BAG_COLS); i <= position; i = i+CANDY_BAG_COLS) {
                         if (this.candyBag[i] != null) {
                             this.candyBag[i].isMoved = false;
-                            this.andyBag[i].isFalling = true;
+                            this.candyBag[i].isFalling = true;
                             
                         }
                     } 
@@ -93,14 +110,14 @@ class CandyBag {
         }
     }
     
-    drawCandyBag(fallingTime) {
+    drawCandyBag() {
         let bagIndex = 0;
         let auxCandy;
         let drawAtX;
         let drawAtY;
         let calculatingLowestFreeSpace = Array(CANDY_BAG_COLS);
-        let pendingCandies = Array(CANDY_BAG_COLS);
     
+        calculatingLowestFreeSpace.fill(-1);
         for (let row = 0; row < CANDY_BAG_ROWS; row++) {
             for (let col = 0; col < CANDY_BAG_COLS; col++) {
                 bagIndex = row*CANDY_BAG_COLS+col;
@@ -109,46 +126,61 @@ class CandyBag {
                 drawAtY = BAG_LEFT_CORNER_Y + (row*TILE_SIZE_H);
                 this.painter.drawTile(bagIndex % 2, drawAtX, drawAtY);
                 if (auxCandy != null) {
-                    if(fallingTime) {
-                        if(auxCandy.isFalling) {
-                            if (this.lowestFreeSpace[col] <= bagIndex) {
-                                auxCandy.isMoved = true;
-                                auxCandy.isFalling = false;
-                            } else {
-                                if (auxCandy.isMoved) {
-                                    this.painter.drawCandy(auxCandy, drawAtX, drawAtY);
-                                    //auxCandy.draw(drawAtX, drawAtY);
-                                    auxCandy.isMoved = false;
-                                } else {
-                                    if (pendingCandies[col] != null) {
-                                        this.candyBag[bagIndex] = pendingCandies[col];
-                                        pendingCandies[col] = null;
-                                    } else {
-                                        this.candyBag[bagIndex] = null;
-                                    }
-                                    if (this.candyBag[bagIndex+CANDY_BAG_COLS] == null) {
-                                        //if position under is empty, move the falling candy
-                                        auxCandy.isMoved = true;
-                                        this.candyBag[bagIndex+CANDY_BAG_COLS] = auxCandy;   
-                                    } else if(this.candyBag[bagIndex+CANDY_BAG_COLS].isFalling) {
-                                        //candy under is also falling
-                                        auxCandy.isMoved = true;
-                                        pendingCandies[col] = auxCandy;
-                                    }    
-                                }
-                            }
-                        } else {
-                            this.drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex);
-                        }
-                    } else { //we paint everything in the position it is
-                        this.drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex);
-                    }
+                    this.drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex);
                 } else {
                     calculatingLowestFreeSpace[col] = bagIndex;
                 }
             }
         }
         this.drawExplosions();
+        this.lowestFreeSpace = calculatingLowestFreeSpace.slice();
+    }
+
+    moveFallingCandies() {
+        let bagIndex = 0;
+        let auxCandy;
+        let calculatingLowestFreeSpace = Array(CANDY_BAG_COLS);
+        let pendingCandies = Array(CANDY_BAG_COLS);
+        
+
+        calculatingLowestFreeSpace.fill(-1);
+        for (let row = 0; row < CANDY_BAG_ROWS; row++) {
+            for (let col = 0; col < CANDY_BAG_COLS; col++) {
+                bagIndex = row*CANDY_BAG_COLS+col;
+                auxCandy = this.candyBag[bagIndex]; 
+                
+                if (auxCandy != null) {
+                    if(auxCandy.isFalling) {
+                        if (this.lowestFreeSpace[col] <= bagIndex) {
+                            auxCandy.isMoved = true;
+                            auxCandy.isFalling = false;
+                        } else {
+                            if (auxCandy.isMoved) {
+                                auxCandy.isMoved = false;
+                            } else {
+                                if (pendingCandies[col] != null) {
+                                    this.candyBag[bagIndex] = pendingCandies[col];
+                                    pendingCandies[col] = null;
+                                } else {
+                                    this.candyBag[bagIndex] = null;
+                                }
+                                if (this.candyBag[bagIndex+CANDY_BAG_COLS] == null) {
+                                    //if position under is empty, move the falling candy
+                                    auxCandy.isMoved = true;
+                                    this.candyBag[bagIndex+CANDY_BAG_COLS] = auxCandy;   
+                                } else if(this.candyBag[bagIndex+CANDY_BAG_COLS].isFalling) {
+                                    //candy under is also falling
+                                    auxCandy.isMoved = true;
+                                    pendingCandies[col] = auxCandy;
+                                }
+                            }
+                        }
+                    } 
+                } else {
+                    calculatingLowestFreeSpace[col] = bagIndex;
+                }
+            }
+        }
         this.lowestFreeSpace = calculatingLowestFreeSpace.slice();
     }
     
@@ -162,9 +194,9 @@ class CandyBag {
     
     drawExplosions() {
         for (let bagIndex of this.explodingCandies) {
-            auxCandy = this.candyBag[bagIndex]; 
-            drawAtX = BAG_LEFT_CORNER_X + ((bagIndex % CANDY_BAG_COLS)*TILE_SIZE_W);
-            drawAtY = BAG_LEFT_CORNER_Y + (Math.floor(bagIndex/CANDY_BAG_COLS)*TILE_SIZE_H);
+            let auxCandy = this.candyBag[bagIndex]; 
+            let drawAtX = BAG_LEFT_CORNER_X + ((bagIndex % CANDY_BAG_COLS)*TILE_SIZE_W);
+            let drawAtY = BAG_LEFT_CORNER_Y + (Math.floor(bagIndex/CANDY_BAG_COLS)*TILE_SIZE_H);
             if (auxCandy != null) {
                 this.painter.drawExplosion(auxCandy, drawAtX, drawAtY);
                 if (auxCandy.isEaten == 0) {

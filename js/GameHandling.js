@@ -6,6 +6,9 @@ const FRIEND_STATUS = ["neutral"];
 const FOLDER_FRIEND = "friend/";
 const UI_H = 6;
 const UI_W = 5;
+const SAME_CANDY_POINTS = 15;
+const SAME_COLOR_POINTS = 15;
+const OTHER_CANDY_POINTS = 5;
 
 class GameHandling {
 
@@ -27,6 +30,7 @@ class GameHandling {
         if (this.friendFavCandy.candyType == this.playerFavCandy.candyType) {
             this.friendFavCandy.randomizeCandy(this.playerFavCandy.candyType);
         }
+        this.friendFavCandy.isFalling = false;
     }
     
     drawFriendUI(x, y) {
@@ -37,8 +41,6 @@ class GameHandling {
         }
         this.painter.drawFriend(0, x+37, y+15);
         this.painter.drawCandy(this.friendFavCandy,x+37, y+15+183+10);
-        //var auxIndex = CANDY_TYPES_ROWS.indexOf(friendFavCandy) * CANDY_COLORS_COLS.length + CANDY_COLORS_COLS.indexOf(friendFavColor);
-        //canvasContext.drawImage(candyPics[auxIndex], x+37, y+15+183+10);
     }
 
     static generateFriendFilenames() {

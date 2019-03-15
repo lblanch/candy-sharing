@@ -1,6 +1,7 @@
 import ImageLoader from "./ImageLoader.js";
 import Candy from "./Candy.js";
 import GameHandling from "./GameHandling.js";
+import { getRandomInt } from "./main.js";
 
 export const TILE_SIZE_W = 45;
 export const TILE_SIZE_H = 45;
@@ -36,7 +37,14 @@ class Painter {
     
     drawCandy(auxCandy, x, y) {
         let exImg = this.imageLoader.pics[auxCandy.candyPicIndex + this.candiesOffset];
+        if (auxCandy.isFalling) {
+            //this.canvasContext.filter = 'contrast(1.4) drop-shadow(9px 9px 2px #e81)';
+            //this.canvasContext.filter = 'grayscale(50%)';
+            x += getRandomInt(3);
+            y += getRandomInt(3);
+        }
         this.canvasContext.drawImage(exImg, x-((exImg.width-TILE_SIZE_W)/2), y-((exImg.height-TILE_SIZE_H)/2));
+        //this.canvasContext.filter = 'none';
     }
 
     drawExplosion(auxCandy, x, y) {

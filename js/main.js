@@ -5,34 +5,31 @@ import GameHandling from './GameHandling.js';
 let canvas, canvasContext;
 let countingFramesFalling = 1;
 let countingFramesGenerating = 1;
-let totalPoints = 0;
 let painter = null;
 let candyBag = null;
 let gameHandler = null;
 
-const SAME_CANDY_POINTS = 15;
-const SAME_COLOR_POINTS = 15;
-const OTHER_CANDY_POINTS = 5;
-const FRAMES_PER_SECOND = 30;
 //FRAMES_GENERATE_CANDIES needs to be bigger than FRAMES_MOVE_FALLING_CANDIES,
 //so the candies fall faster than are being generated
 const FRAMES_GENERATE_CANDIES = 140; 
 const FRAMES_MOVE_FALLING_CANDIES = 70;
+const FRAMES_PER_SECOND = 30;
 
 window.onload = function () {
     canvas = document.getElementById('gameCanvas');
-    //this is the graphics buffer, where we can draw stuff
     canvasContext = canvas.getContext('2d');
 
     painter = new Painter(canvasContext, document);
 
-    //show message while we wait to go image loading
+    //show message while we do image loading
     painter.colorRect(0, 0, canvas.width, canvas.height, 'black');
     painter.colorText("LOADING IMAGES", canvas.width/2, canvas.height/2, 'red');
     
     //define function to be called after loading the images, the one that starts de game
     painter.imageLoader.onDoneLoading(startGame);
     painter.loadGameImages();
+
+    canvas.addEventListener('mouseup', updateMousePos);
 }
 
 function startGame() {
@@ -49,10 +46,9 @@ function startGame() {
 }
 
 function tick() {
-    let fallingTime = false;
-
     if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
-        fallingTime = true;
+        console.log("move!!");
+        candyBag.moveFallingCandies();
         countingFramesFalling = 1;
     } else {
         countingFramesFalling++;
@@ -64,9 +60,18 @@ function tick() {
     } else {
         countingFramesGenerating++;
     }
+    console.log("draw");
     painter.drawBackground();
-    candyBag.drawCandyBag(fallingTime);
+    candyBag.drawCandyBag();
     gameHandler.drawFriendUI(300, 25);
+}
+
+function updateMousePos(event) {
+    let rect = canvas.getBoundingClientRect();
+    let root = document.documentElement;
+    let mouseX = event.clientX - rect.left - root.scrollLeft;
+    let mouseY = event.clientY - rect.top - root.scrollTop;
+    candyBag.processClickedBagPosition(mouseX, mouseY);
 }
 
 //will return int between 0 and max-1
