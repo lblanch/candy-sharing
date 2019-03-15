@@ -1,5 +1,6 @@
 import Painter from './Painter.js';
 import CandyBag from './CandyBag.js';
+import GameHandling from './GameHandling.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
@@ -7,6 +8,7 @@ let countingFramesGenerating = 1;
 let totalPoints = 0;
 let painter = null;
 let candyBag = null;
+let gameHandler = null;
 
 const SAME_CANDY_POINTS = 15;
 const SAME_COLOR_POINTS = 15;
@@ -41,14 +43,9 @@ function startGame() {
 
     candyBag = new CandyBag(painter);
     candyBag.reset();
-    //candyBag.generateCandies();
-    //candyBag.fill(null);
 
-    //colorRect(0, 0, canvas.width, canvas.height, 'white');
-    //generateCandies();
-    //colorRect(0, 0, canvas.width, canvas.height, 'blue');
-    //drawCandyBag(false);
-    //drawFriend();
+    gameHandler = new GameHandling(painter);
+    gameHandler.generateRandomFriend();
 }
 
 function tick() {
@@ -69,7 +66,7 @@ function tick() {
     }
     painter.drawBackground();
     candyBag.drawCandyBag(fallingTime);
-    //painter.drawFriendUI(300, 25);
+    gameHandler.drawFriendUI(300, 25);
 }
 
 //will return int between 0 and max-1

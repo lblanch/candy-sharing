@@ -19,6 +19,14 @@ class Candy {
         this.explosionPicIndex = (CANDY_COLORS_COLS.indexOf(this.candyColor)*CANDY_EXPLOSIONS_FRAMES) + (CANDY_COLORS_COLS.length * CANDY_TYPES_ROWS.length) - 1;
     }
 
+    randomizeColor(toBeAvoided = null) {
+        //update candyPicIndex AND explosionPicIndex
+    }
+
+    randomizeCandy(toBeAvoided = null) {
+        //update candyPicIndex
+    }
+
     static generateCandyFilenames() {
         let fileNames = [];
         let fileName = "";

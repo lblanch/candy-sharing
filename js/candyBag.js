@@ -1,12 +1,12 @@
 import Candy from "./Candy.js";
 import { getRandomInt } from "./main.js";
+import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
 
 const BAG_LEFT_CORNER_X = 50;
 const BAG_LEFT_CORNER_Y =25;
 const CANDY_BAG_ROWS = 12;
 const CANDY_BAG_COLS = 5;
-const CANDY_SIZE_W = 45;
-const CANDY_SIZE_H = 45;
+
 const GENERATE_CANDIES_AMOUNT = 3; //less than CANDY_BAG_COLS!
 
 class CandyBag {
@@ -105,8 +105,8 @@ class CandyBag {
             for (let col = 0; col < CANDY_BAG_COLS; col++) {
                 bagIndex = row*CANDY_BAG_COLS+col;
                 auxCandy = this.candyBag[bagIndex]; 
-                drawAtX = BAG_LEFT_CORNER_X + (col*CANDY_SIZE_W);
-                drawAtY = BAG_LEFT_CORNER_Y + (row*CANDY_SIZE_H);
+                drawAtX = BAG_LEFT_CORNER_X + (col*TILE_SIZE_W);
+                drawAtY = BAG_LEFT_CORNER_Y + (row*TILE_SIZE_H);
                 this.painter.drawTile(bagIndex % 2, drawAtX, drawAtY);
                 if (auxCandy != null) {
                     if(fallingTime) {
@@ -116,7 +116,7 @@ class CandyBag {
                                 auxCandy.isFalling = false;
                             } else {
                                 if (auxCandy.isMoved) {
-                                    this.painter.drawCandy(auxCandy, drawAtX, drawAtY, CANDY_SIZE_W, CANDY_SIZE_H);
+                                    this.painter.drawCandy(auxCandy, drawAtX, drawAtY);
                                     //auxCandy.draw(drawAtX, drawAtY);
                                     auxCandy.isMoved = false;
                                 } else {
@@ -154,7 +154,7 @@ class CandyBag {
     
     drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex) {
         if (auxCandy.isEaten == 0) {
-            this.painter.drawCandy(auxCandy, drawAtX, drawAtY, CANDY_SIZE_W, CANDY_SIZE_H);
+            this.painter.drawCandy(auxCandy, drawAtX, drawAtY);
         } else {
             this.explodingCandies.push(bagIndex);
         }
@@ -163,10 +163,10 @@ class CandyBag {
     drawExplosions() {
         for (let bagIndex of this.explodingCandies) {
             auxCandy = this.candyBag[bagIndex]; 
-            drawAtX = BAG_LEFT_CORNER_X + ((bagIndex % CANDY_BAG_COLS)*CANDY_SIZE_W);
-            drawAtY = BAG_LEFT_CORNER_Y + (Math.floor(bagIndex/CANDY_BAG_COLS)*CANDY_SIZE_H);
+            drawAtX = BAG_LEFT_CORNER_X + ((bagIndex % CANDY_BAG_COLS)*TILE_SIZE_W);
+            drawAtY = BAG_LEFT_CORNER_Y + (Math.floor(bagIndex/CANDY_BAG_COLS)*TILE_SIZE_H);
             if (auxCandy != null) {
-                this.painter.drawExplosion(auxCandy, drawAtX, drawAtY, CANDY_SIZE_W, CANDY_SIZE_H);
+                this.painter.drawExplosion(auxCandy, drawAtX, drawAtY);
                 if (auxCandy.isEaten == 0) {
                     this.candyBag[bagIndex] = null;
                 }

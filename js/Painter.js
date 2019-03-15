@@ -1,6 +1,9 @@
 import ImageLoader from "./ImageLoader.js";
 import Candy from "./Candy.js";
-import Friend from "./Friend.js";
+import GameHandling from "./GameHandling.js";
+
+export const TILE_SIZE_W = 45;
+export const TILE_SIZE_H = 45;
 
 class Painter {
 
@@ -19,7 +22,7 @@ class Painter {
         this.imageLoader.addToQueue("background/tile3");
         this.backgroundIndex = this.imageLoader.addToQueue("background/background_pastel");
         this.candiesOffset = this.imageLoader.addArrayToQueue(Candy.generateCandyFilenames());
-        this.friendOffset = this.imageLoader.addArrayToQueue(Friend.generateFriendFilenames())
+        this.friendOffset = this.imageLoader.addArrayToQueue(GameHandling.generateFriendFilenames())
         this.imageLoader.loadImagesFromQueue();
     }
 
@@ -31,15 +34,19 @@ class Painter {
         this.canvasContext.drawImage(this.imageLoader.pics[this.tileOffset + tile], drawAtX, drawAtY);
     }
     
-    drawCandy(auxCandy, x, y, w, h) {
+    drawCandy(auxCandy, x, y) {
         let exImg = this.imageLoader.pics[auxCandy.candyPicIndex + this.candiesOffset];
-        this.canvasContext.drawImage(exImg, x-((exImg.width-w)/2), y-((exImg.height-h)/2));
+        this.canvasContext.drawImage(exImg, x-((exImg.width-TILE_SIZE_W)/2), y-((exImg.height-TILE_SIZE_H)/2));
     }
 
-    drawExplosion(auxCandy, x, y, w, h) {
+    drawExplosion(auxCandy, x, y) {
         let exImg = this.imageLoader.pics[auxCandy.explosionPicIndex + auxCandy.isEaten + this.candiesOffset];
-        this.canvasContext.drawImage(exImg, x-((exImg.width-w)/2), y-((exImg.height-h)/2));
+        this.canvasContext.drawImage(exImg, x-((exImg.width-TILE_SIZE_W)/2), y-((exImg.height-TILE_SIZE_H)/2));
         auxCandy.nextEaten();
+    }
+
+    drawFriend(friendIndex, x, y) {
+        this.canvasContext.drawImage(this.imageLoader.pics[this.friendOffset + friendIndex], x, y);
     }
 
     colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
