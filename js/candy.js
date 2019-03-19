@@ -15,6 +15,7 @@ class Candy {
         this.candyColor = color;
         this.isFalling = falling;
         this.isEaten = 0;
+        this.indexExplosion = -1;
         this.candyPicIndex = CANDY_TYPES_ROWS.indexOf(this.candyType) * CANDY_COLORS_COLS.length + CANDY_COLORS_COLS.indexOf(this.candyColor);
         this.explosionPicIndex = (CANDY_COLORS_COLS.indexOf(this.candyColor)*CANDY_EXPLOSIONS_FRAMES) + (CANDY_COLORS_COLS.length * CANDY_TYPES_ROWS.length) - 1;
     }

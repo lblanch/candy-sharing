@@ -8,6 +8,7 @@ let countingFramesGenerating = 1;
 let painter = null;
 let candyBag = null;
 let gameHandler = null;
+let pauseVar = false;
 
 //FRAMES_GENERATE_CANDIES needs to be bigger than FRAMES_MOVE_FALLING_CANDIES,
 //so the candies fall faster than are being generated
@@ -30,6 +31,7 @@ window.onload = function () {
     painter.loadGameImages();
 
     canvas.addEventListener('mouseup', updateMousePos);
+    document.addEventListener('keyup', pauseGame);
 }
 
 function startGame() {
@@ -46,24 +48,24 @@ function startGame() {
 }
 
 function tick() {
-    if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
-        console.log("move!!");
-        candyBag.moveFallingCandies();
-        countingFramesFalling = 1;
-    } else {
-        countingFramesFalling++;
+    if(!pauseVar) {
+        if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
+            candyBag.moveFallingCandies();
+            countingFramesFalling = 1;
+        } else {
+            countingFramesFalling++;
+        }
+    
+        if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
+            candyBag.generateCandies();
+            countingFramesGenerating = 1;
+        } else {
+            countingFramesGenerating++;
+        }
+        painter.drawBackground();
+        candyBag.drawCandyBag();
+        gameHandler.drawFriendUI(300, 25);
     }
-
-    if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
-        candyBag.generateCandies();
-        countingFramesGenerating = 1;
-    } else {
-        countingFramesGenerating++;
-    }
-    console.log("draw");
-    painter.drawBackground();
-    candyBag.drawCandyBag();
-    gameHandler.drawFriendUI(300, 25);
 }
 
 function updateMousePos(event) {
@@ -72,6 +74,12 @@ function updateMousePos(event) {
     let mouseX = event.clientX - rect.left - root.scrollLeft;
     let mouseY = event.clientY - rect.top - root.scrollTop;
     candyBag.processClickedBagPosition(mouseX, mouseY);
+}
+
+function pauseGame(event) {
+    if(event.keyCode == 32) {
+        pauseVar = !pauseVar;
+    }
 }
 
 //will return int between 0 and max-1
