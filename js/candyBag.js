@@ -51,10 +51,11 @@ class CandyBag {
         }
     }
     
-    processClickedBagPosition(mouseX, mouseY) {
+    processClickedBagPosition(mouseX, mouseY, friendCandyColor) {
+        let eatenCandies = 0;
+        let eatenColor = null;
         if ((mouseX > BAG_LEFT_CORNER_X && mouseX <= ((CANDY_BAG_COLS * TILE_SIZE_W) + BAG_LEFT_CORNER_X)) && 
             (mouseY > BAG_LEFT_CORNER_Y && mouseY <= ((CANDY_BAG_ROWS * TILE_SIZE_H) + BAG_LEFT_CORNER_Y))) {
-                
                 let clickedX = Math.floor((mouseX - BAG_LEFT_CORNER_X)/TILE_SIZE_W);
                 let clickedY = Math.floor((mouseY - BAG_LEFT_CORNER_Y)/TILE_SIZE_H);
                 let clickedIndex = clickedY * CANDY_BAG_COLS + clickedX;
@@ -62,42 +63,46 @@ class CandyBag {
                     if(!this.candyBag[clickedIndex].isFalling) {
                         this.closeCandies.push(clickedIndex);
                         let auxCandy = this.candyBag[clickedIndex];
+                        eatenColor = auxCandy.candyColor;
                         auxCandy.isEaten++;
                         auxCandy.indexExplosion = clickedIndex;
                         this.explodingCandies.push(auxCandy);
                         this.candyBag[clickedIndex] = null;
                         this.updateLowestFreeSpace(clickedIndex);
-                        //this.candyBag[clickedIndex].isEaten++;
+                        eatenCandies++;
                         while (this.closeCandies.length > 0) {
-                            this.checkCloseByCandies(this.closeCandies.length - 1, auxCandy.candyColor);
+                            eatenCandies += this.checkCloseByCandies(this.closeCandies.length - 1, auxCandy.candyColor);
                         }
                     }
                 }
         }
+
+        return { eatenCount: eatenCandies, eatenColor: eatenColor };
     }
 
     checkCloseByCandies(positionToBeChecked, colorToBeChecked) {
         let currentPosition = this.closeCandies[positionToBeChecked];
+        let eatenCandies = 0;
     
         this.closeCandies.splice(positionToBeChecked, 1);
     
         //if it's not in the first row, we check the candy above
         if(currentPosition >= CANDY_BAG_COLS) {
-            this.addToCloseCandies(currentPosition - CANDY_BAG_COLS, colorToBeChecked, true);
+            eatenCandies += this.addToCloseCandies(currentPosition - CANDY_BAG_COLS, colorToBeChecked, true);
         }
         //if it's not against the left wall, we check the candy to the left
         if(currentPosition % CANDY_BAG_COLS != 0) {
-            this.addToCloseCandies(currentPosition - 1, colorToBeChecked, false);
+            eatenCandies += this.addToCloseCandies(currentPosition - 1, colorToBeChecked, false);
         }
         //if it's not in the last row, we check the candy below
         if(currentPosition < (CANDY_BAG_COLS*(CANDY_BAG_ROWS - 1))) {
-            this.addToCloseCandies(currentPosition + CANDY_BAG_COLS, colorToBeChecked, false);
+            eatenCandies += this.addToCloseCandies(currentPosition + CANDY_BAG_COLS, colorToBeChecked, false);
         }
         //if it's not against the right wall, we check the candy to the right
         if((currentPosition + 1) % (CANDY_BAG_COLS) != 0) {
-            this.addToCloseCandies(currentPosition + 1, colorToBeChecked, false);
+            eatenCandies += this.addToCloseCandies(currentPosition + 1, colorToBeChecked, false);
         }
-         
+        return eatenCandies;
     }
     
     updateLowestFreeSpace(index) {
@@ -108,9 +113,11 @@ class CandyBag {
     }
 
     addToCloseCandies(position, colorToBeChecked, direction) {
+        let eaten = 0;
         if (this.candyBag[position] != null) {
             if (this.candyBag[position].isFalling == false && this.candyBag[position].isEaten == 0) {
                 if (this.candyBag[position].candyColor == colorToBeChecked) {
+                    eaten++;
                     let auxCandy = this.candyBag[position];
                     auxCandy.isEaten++;
                     auxCandy.indexExplosion = position;
@@ -130,6 +137,7 @@ class CandyBag {
                 }
             }
         }
+        return eaten;
     }
     
     drawCandyBag() {

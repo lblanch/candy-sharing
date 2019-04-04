@@ -73,7 +73,8 @@ function updateMousePos(event) {
     let root = document.documentElement;
     let mouseX = event.clientX - rect.left - root.scrollLeft;
     let mouseY = event.clientY - rect.top - root.scrollTop;
-    candyBag.processClickedBagPosition(mouseX, mouseY);
+    let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY, gameHandler.friendFavCandy.candyColor);
+    gameHandler.calculatePoints(eatenCount, eatenColor);
 }
 
 function pauseGame(event) {

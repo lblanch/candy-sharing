@@ -68,7 +68,8 @@ class Painter {
         this.canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
         this.canvasContext.fill();
     }
-    colorText(showWords, textX, textY, fillColor) {
+    colorText(showWords, textX, textY, fillColor = '#64bcf9', size = "40px") {
+        this.canvasContext.font = size + ' courier';
         this.canvasContext.fillStyle = fillColor;
         this.canvasContext.fillText(showWords, textX, textY);
     }
