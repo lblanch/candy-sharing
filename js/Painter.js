@@ -38,13 +38,10 @@ class Painter {
     drawCandy(auxCandy, x, y) {
         let exImg = this.imageLoader.pics[auxCandy.candyPicIndex + this.candiesOffset];
         if (auxCandy.isFalling) {
-            //this.canvasContext.filter = 'contrast(1.4) drop-shadow(9px 9px 2px #e81)';
-            //this.canvasContext.filter = 'grayscale(50%)';
             x += getRandomInt(3);
             y += getRandomInt(3);
         }
         this.canvasContext.drawImage(exImg, x-((exImg.width-TILE_SIZE_W)/2), y-((exImg.height-TILE_SIZE_H)/2));
-        //this.canvasContext.filter = 'none';
     }
 
     drawExplosion(auxCandy, x, y) {
@@ -68,10 +65,15 @@ class Painter {
         this.canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
         this.canvasContext.fill();
     }
-    colorText(showWords, textX, textY, fillColor = '#64bcf9', size = "40px") {
+    colorText(showWords, textX, textY, fillColor = '#64bcf9', size = "40px", underline = false) {
         this.canvasContext.font = size + ' courier';
         this.canvasContext.fillStyle = fillColor;
+        this.canvasContext.textAlign = "center"; 
         this.canvasContext.fillText(showWords, textX, textY);
+        if (underline) {
+            let text = this.canvasContext.measureText(showWords);
+            this.canvasContext.fillRect(textX-(text.width/2), textY + 3, text.width, 2);
+        }    
     }
 }
 

@@ -1,7 +1,7 @@
-import { getRandomInt } from "./main.js";
+import { getRandomInt, _ } from "./main.js";
 
-const CANDY_TYPES_ROWS = ["bean", "jelly", "lollipop", "mm", "swirl", "wrappedsolid"];
-const CANDY_COLORS_COLS = ["red", "yellow", "purple", "green", "blue"];
+export const CANDY_TYPES_ROWS = ["bean", "jelly", "lollipop", "mm", "swirl", "wrappedsolid"];
+export const CANDY_COLORS_COLS = ["red", "yellow", "purple", "green", "blue"];
 const CANDY_EXPLOSIONS_FRAMES = 4;
 const FOLDER_CANDY = "candy/";
 const FOLDER_EXPLOSIONS = "explosions/explosion_";
@@ -18,6 +18,12 @@ class Candy {
         this.indexExplosion = -1;
         this.candyPicIndex = CANDY_TYPES_ROWS.indexOf(this.candyType) * CANDY_COLORS_COLS.length + CANDY_COLORS_COLS.indexOf(this.candyColor);
         this.explosionPicIndex = (CANDY_COLORS_COLS.indexOf(this.candyColor)*CANDY_EXPLOSIONS_FRAMES) + (CANDY_COLORS_COLS.length * CANDY_TYPES_ROWS.length) - 1;
+        this.candyColorsTranslated = Array();
+        this.candyColorsTranslated.push(_("red"));
+        this.candyColorsTranslated.push(_("yellow"));
+        this.candyColorsTranslated.push(_("purple"));
+        this.candyColorsTranslated.push(_("green"));
+        this.candyColorsTranslated.push(_("blue"));
     }
 
     randomizeColor(toBeAvoided = null) {

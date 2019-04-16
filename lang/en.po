@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-04-08 20:29+0300\n"
+"PO-Revision-Date: 2019-04-12 16:07+0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ../js\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language: en\n"
+"X-Poedit-SearchPath-0: Candy.js\n"
+"X-Poedit-SearchPath-1: CandyBag.js\n"
+"X-Poedit-SearchPath-2: GameHandling.js\n"
+"X-Poedit-SearchPath-3: ImageLoader.js\n"
+"X-Poedit-SearchPath-4: main.js\n"
+"X-Poedit-SearchPath-5: Painter.js\n"
+
+#: Candy.js:22
+msgid "red"
+msgstr "strawberry"
+
+#: Candy.js:23
+msgid "yellow"
+msgstr "lemon"
+
+#: Candy.js:24
+msgid "purple"
+msgstr "prune"
+
+#: Candy.js:25
+msgid "green"
+msgstr "kiwi"
+
+#: Candy.js:26
+msgid "blue"
+msgstr "blueberry"
+
+#: main.js:28
+msgid "LOADING IMAGES"
+msgstr "LOADING IMAGES"

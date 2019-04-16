@@ -1,9 +1,15 @@
 import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
+import {CANDY_TYPES_ROWS, CANDY_COLORS_COLS} from "./Candy.js";
 import Candy from "./Candy.js";
 
 //const FRIEND_STATUS = ["neutral", "happy", "joy", "surprise", "unhappy", "disgusted"];
 const FRIEND_STATUS = ["neutral"];
 const FOLDER_FRIEND = "friend/";
+
+const SUPPORTED_LANGUAGES_CODES = ['ca_ES', 'en', 'es_ES'];
+const SUPPORTED_LANGUAGES_NAMES = ['Català', 'English', 'Castellano'];
+
+
 //UI sizes in tiles
 const UI_FRIEND_H = 6;
 const UI_PLAYER_H = 5;
@@ -53,8 +59,40 @@ class GameHandling {
         this.painter.colorText(" x " + this.friendFavCandyCount, x+37+45, y+15+183+10+32)
     }
 
-    calculatePoints(eatenCount, eatenColor) {
+    drawColorSelector(x, y) {
+        let auxCandy = null;
 
+        for (let flavors = 0; flavors < CANDY_COLORS_COLS.length; flavors++) {
+            auxCandy = new Candy(CANDY_TYPES_ROWS[flavors], CANDY_COLORS_COLS[flavors], false);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)), y);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)), y + TILE_SIZE_H);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)), y + (2*TILE_SIZE_H));
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)) + TILE_SIZE_W, y);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)) + TILE_SIZE_W, y + TILE_SIZE_H);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)) + TILE_SIZE_W, y + (2*TILE_SIZE_H));
+            this.painter.drawCandy(auxCandy, (x+(TILE_SIZE_W/2)+(2*TILE_SIZE_W * flavors)), y+(TILE_SIZE_H/2));
+            //this.painter.colorText(CANDY_COLORS_COLS[flavors], x + (2*TILE_SIZE_W*flavors) + TILE_SIZE_W, y + (2.5*TILE_SIZE_H), undefined, "15px");
+            this.painter.colorText(auxCandy.candyColorsTranslated[flavors], x + (2*TILE_SIZE_W*flavors) + TILE_SIZE_W, y + (2.5*TILE_SIZE_H), undefined, "15px");
+        }
+    }
+
+    drawLanguageSelector(currentLang, x = 100, y = 100) {
+        let underline = false;
+
+        for (let lang = 0; lang < SUPPORTED_LANGUAGES_NAMES.length; lang++) {
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(lang)), y);
+            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(lang)) + TILE_SIZE_W, y);
+            
+            if (SUPPORTED_LANGUAGES_CODES[lang] == currentLang) {
+                underline = true;
+            } else {
+                underline = false;
+            }
+            this.painter.colorText(SUPPORTED_LANGUAGES_NAMES[lang], x + (2*TILE_SIZE_W*lang) + TILE_SIZE_W, y + (0.5*TILE_SIZE_H)+2, undefined, "15px", underline);
+        }
+    }
+
+    calculatePoints(eatenCount, eatenColor) {
         if (eatenColor == this.playerFavCandy.candyColor) {
             this.playerFavCandyCount += eatenCount;
             this.playerPoints += eatenCount * SAME_COLOR_POINTS;
