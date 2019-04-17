@@ -1,6 +1,7 @@
 import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
 import {CANDY_TYPES_ROWS, CANDY_COLORS_COLS} from "./Candy.js";
 import Candy from "./Candy.js";
+import Button from "./Button.js";
 
 //const FRIEND_STATUS = ["neutral", "happy", "joy", "surprise", "unhappy", "disgusted"];
 const FRIEND_STATUS = ["neutral"];
@@ -8,6 +9,7 @@ const FOLDER_FRIEND = "friend/";
 
 const SUPPORTED_LANGUAGES_CODES = ['ca_ES', 'en', 'es_ES'];
 const SUPPORTED_LANGUAGES_NAMES = ['Català', 'English', 'Castellano'];
+let SUPPORTED_LANGUAGES = Array();
 
 
 //UI sizes in tiles
@@ -71,24 +73,58 @@ class GameHandling {
             this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)) + TILE_SIZE_W, y + TILE_SIZE_H);
             this.painter.drawTile(0, x + (2*TILE_SIZE_W*(flavors)) + TILE_SIZE_W, y + (2*TILE_SIZE_H));
             this.painter.drawCandy(auxCandy, (x+(TILE_SIZE_W/2)+(2*TILE_SIZE_W * flavors)), y+(TILE_SIZE_H/2));
-            //this.painter.colorText(CANDY_COLORS_COLS[flavors], x + (2*TILE_SIZE_W*flavors) + TILE_SIZE_W, y + (2.5*TILE_SIZE_H), undefined, "15px");
             this.painter.colorText(auxCandy.candyColorsTranslated[flavors], x + (2*TILE_SIZE_W*flavors) + TILE_SIZE_W, y + (2.5*TILE_SIZE_H), undefined, "15px");
         }
     }
 
-    drawLanguageSelector(currentLang, x = 100, y = 100) {
-        let underline = false;
+    initializeLanguageSelector(currentLang, x = 100, y = 100) {
+        let auxButton;
 
         for (let lang = 0; lang < SUPPORTED_LANGUAGES_NAMES.length; lang++) {
-            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(lang)), y);
-            this.painter.drawTile(0, x + (2*TILE_SIZE_W*(lang)) + TILE_SIZE_W, y);
+            auxButton = new Button(x + (2*TILE_SIZE_W*lang), y, TILE_SIZE_W*2, TILE_SIZE_H);
+            auxButton.langCode = SUPPORTED_LANGUAGES_CODES[lang];
+            auxButton.langName = SUPPORTED_LANGUAGES_NAMES[lang];
             
-            if (SUPPORTED_LANGUAGES_CODES[lang] == currentLang) {
+            if (auxButton.langCode == currentLang) {
+                auxButton.current = true;
+            } else {
+                auxButton.current = false;
+            }
+            SUPPORTED_LANGUAGES.push(auxButton);
+        }
+    }
+
+    processClickedLanguages(mouseX, mouseY) {
+        let selectedLang = null;
+        if(SUPPORTED_LANGUAGES[0].posX <= mouseX && (SUPPORTED_LANGUAGES[SUPPORTED_LANGUAGES.length-1].posX + SUPPORTED_LANGUAGES[SUPPORTED_LANGUAGES.length-1].width) > mouseX) {
+            if(SUPPORTED_LANGUAGES[0].posY <= mouseY && (SUPPORTED_LANGUAGES[0].posY + SUPPORTED_LANGUAGES[0].height) > mouseY) {
+                console.log("hola");
+                for(let lang = 0; lang < SUPPORTED_LANGUAGES.length; lang++) {
+                    SUPPORTED_LANGUAGES[lang].current = false;
+                    if(SUPPORTED_LANGUAGES[lang].isWithin(mouseX, mouseY)) {
+                        SUPPORTED_LANGUAGES[lang].current = true;
+                        selectedLang = SUPPORTED_LANGUAGES[lang].langCode;
+                    }
+                }
+            }
+        }
+        return selectedLang;
+    }
+
+    drawLanguageSelector() {
+        let underline = false;
+
+        for (let lang = 0; lang < SUPPORTED_LANGUAGES.length; lang++) {
+
+            this.painter.drawTile(0, SUPPORTED_LANGUAGES[lang].posX, SUPPORTED_LANGUAGES[lang].posY);
+            this.painter.drawTile(0, SUPPORTED_LANGUAGES[lang].posX + TILE_SIZE_W, SUPPORTED_LANGUAGES[lang].posY);
+            
+            if (SUPPORTED_LANGUAGES[lang].current) {
                 underline = true;
             } else {
                 underline = false;
             }
-            this.painter.colorText(SUPPORTED_LANGUAGES_NAMES[lang], x + (2*TILE_SIZE_W*lang) + TILE_SIZE_W, y + (0.5*TILE_SIZE_H)+2, undefined, "15px", underline);
+            this.painter.colorText(SUPPORTED_LANGUAGES_NAMES[lang], SUPPORTED_LANGUAGES[lang].posX + TILE_SIZE_W, SUPPORTED_LANGUAGES[lang].posY + (0.5*TILE_SIZE_H)+2, undefined, "15px", underline);
         }
     }
 

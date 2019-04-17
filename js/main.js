@@ -47,6 +47,8 @@ function startGame() {
     gameHandler = new GameHandling(painter);
     gameHandler.generateRandomFriend();
 
+    gameHandler.initializeLanguageSelector(translator.domain, 500, 30);
+
     //1000 = 1 sec in milisecs
     setInterval(tick, 1000/FRAMES_PER_SECOND);
 }
@@ -58,8 +60,7 @@ function tick() {
 function startScreen() {
     painter.drawBackground();
     gameHandler.drawColorSelector(100, 100);
-    //console.log(translator.domain);
-    gameHandler.drawLanguageSelector(translator.domain, 500, 30);
+    gameHandler.drawLanguageSelector();
 }
 
 function endScreen() {
@@ -92,8 +93,17 @@ function updateMousePos(event) {
     let root = document.documentElement;
     let mouseX = event.clientX - rect.left - root.scrollLeft;
     let mouseY = event.clientY - rect.top - root.scrollTop;
+    console.log(mouseX + " " + mouseY);
     let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY, gameHandler.friendFavCandy.candyColor);
-    gameHandler.calculatePoints(eatenCount, eatenColor);
+    if ( eatenCount == 0) {
+        let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
+        if(newLang != null) {
+            translator.domain = newLang;
+        }
+    } else {
+        gameHandler.calculatePoints(eatenCount, eatenColor);
+    }
+    
 }
 
 function pauseGame(event) {
