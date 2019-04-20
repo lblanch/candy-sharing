@@ -1,17 +1,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-04-08 20:29+0300\n"
-"PO-Revision-Date: 2019-04-12 16:07+0300\n"
+"POT-Creation-Date: 2019-04-20 22:35+0300\n"
+"PO-Revision-Date: 2019-04-20 22:35+0300\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ../js\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: \n"
-"Language: en\n"
 "X-Poedit-SearchPath-0: Candy.js\n"
 "X-Poedit-SearchPath-1: CandyBag.js\n"
 "X-Poedit-SearchPath-2: GameHandling.js\n"
@@ -39,6 +39,14 @@ msgstr "kiwi"
 msgid "blue"
 msgstr "blueberry"
 
-#: main.js:28
+#: GameHandling.js:74
+msgid "points"
+msgstr "points"
+
+#: main.js:35
 msgid "LOADING IMAGES"
 msgstr "LOADING IMAGES"
+
+#: main.js:71
+msgid "START GAME"
+msgstr "START GAME"

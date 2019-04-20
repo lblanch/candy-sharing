@@ -9,8 +9,11 @@ let painter = null;
 let candyBag = null;
 let gameHandler = null;
 let pauseVar = false;
-let gameState = null;
 let translator = null
+
+//functions that change according to game state
+let gameState = null;
+let gameStateMouseUpdate = null;
 
 //FRAMES_GENERATE_CANDIES needs to be bigger than FRAMES_MOVE_FALLING_CANDIES,
 //so the candies fall faster than are being generated
@@ -35,19 +38,22 @@ window.onload = function () {
     painter.imageLoader.onDoneLoading(startGame);
     painter.loadGameImages();
 
-    canvas.addEventListener('mouseup', updateMousePos);
+    gameHandler = new GameHandling(painter);
+    gameHandler.initializeLanguageSelector(translator.domain, 265, 25);
+    gameHandler.initializeTasteSelector(50);
+    gameHandler.initializeStartGameButton(205, 300);
+
+    canvas.addEventListener('mouseup', mouseEvent);
     document.addEventListener('keyup', pauseGame);
     gameState = startScreen;
+    gameStateMouseUpdate = mouseEventStartGame;
 }
 
 function startGame() {
     candyBag = new CandyBag(painter);
     candyBag.reset();
 
-    gameHandler = new GameHandling(painter);
     gameHandler.generateRandomFriend();
-
-    gameHandler.initializeLanguageSelector(translator.domain, 500, 30);
 
     //1000 = 1 sec in milisecs
     setInterval(tick, 1000/FRAMES_PER_SECOND);
@@ -59,8 +65,11 @@ function tick() {
 
 function startScreen() {
     painter.drawBackground();
-    gameHandler.drawColorSelector(100, 100);
+    gameHandler.drawColorSelector();
     gameHandler.drawLanguageSelector();
+    if (gameHandler.currentFlavour != null) {
+        gameHandler.drawStartGameButton(_("START GAME"));
+    }
 }
 
 function endScreen() {
@@ -83,17 +92,24 @@ function gameScreen() {
             countingFramesGenerating++;
         }
         painter.drawBackground();
+        gameHandler.drawLanguageSelector(260, 25);
         candyBag.drawCandyBag();
-        gameHandler.drawFriendUI(300, 25);
+        gameHandler.drawFriendUI(290, 90);
     }
 }
 
-function updateMousePos(event) {
+function mouseEvent(event) {
     let rect = canvas.getBoundingClientRect();
     let root = document.documentElement;
     let mouseX = event.clientX - rect.left - root.scrollLeft;
     let mouseY = event.clientY - rect.top - root.scrollTop;
-    console.log(mouseX + " " + mouseY);
+
+    gameStateMouseUpdate(mouseX, mouseY);
+    
+}
+
+function mouseEventDuringGame(mouseX, mouseY) {
+    
     let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY, gameHandler.friendFavCandy.candyColor);
     if ( eatenCount == 0) {
         let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
@@ -104,6 +120,19 @@ function updateMousePos(event) {
         gameHandler.calculatePoints(eatenCount, eatenColor);
     }
     
+}
+
+function mouseEventStartGame(mouseX, mouseY) {
+    let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
+    if(newLang != null) {
+        translator.domain = newLang;
+    } else if (gameHandler.startButton.isWithin(mouseX, mouseY)) {
+        gameHandler.updatePlayerFavoriteCandy();
+        gameStateMouseUpdate = mouseEventDuringGame;
+        gameState = gameScreen;
+    } else {
+        gameHandler.processClickedFlavors(mouseX, mouseY);
+    }
 }
 
 function pauseGame(event) {

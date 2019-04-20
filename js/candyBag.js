@@ -2,8 +2,8 @@ import Candy from "./Candy.js";
 import { getRandomInt } from "./main.js";
 import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
 
-const BAG_LEFT_CORNER_X = 50;
-const BAG_LEFT_CORNER_Y =25;
+const BAG_LEFT_CORNER_X = 25;
+const BAG_LEFT_CORNER_Y = 25;
 const CANDY_BAG_ROWS = 12;
 const CANDY_BAG_COLS = 5;
 
