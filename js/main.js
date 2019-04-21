@@ -4,12 +4,12 @@ import GameHandling from './GameHandling.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
+let countingCandyWaves = 0;
 let countingFramesGenerating = 1;
 let painter = null;
 let candyBag = null;
 let gameHandler = null;
-let pauseVar = false;
-let translator = null
+let translator = null;
 
 //functions that change according to game state
 let gameState = null;
@@ -20,6 +20,7 @@ let gameStateMouseUpdate = null;
 const FRAMES_GENERATE_CANDIES = 140; 
 const FRAMES_MOVE_FALLING_CANDIES = 70;
 const FRAMES_PER_SECOND = 30;
+const CANDY_WAVES = 6;
 
 window.onload = function () {
     
@@ -40,11 +41,11 @@ window.onload = function () {
 
     gameHandler = new GameHandling(painter);
     gameHandler.initializeLanguageSelector(translator.domain, 265, 25);
-    gameHandler.initializeTasteSelector(50);
-    gameHandler.initializeStartGameButton(205, 300);
+    gameHandler.initializeTasteSelector(50, 260);
+    gameHandler.initializeStartGameButton(205, 450);
 
     canvas.addEventListener('mouseup', mouseEvent);
-    document.addEventListener('keyup', pauseGame);
+    //document.addEventListener('keyup', pauseGame);
     gameState = startScreen;
     gameStateMouseUpdate = mouseEventStartGame;
 }
@@ -52,8 +53,6 @@ window.onload = function () {
 function startGame() {
     candyBag = new CandyBag(painter);
     candyBag.reset();
-
-    gameHandler.generateRandomFriend();
 
     //1000 = 1 sec in milisecs
     setInterval(tick, 1000/FRAMES_PER_SECOND);
@@ -65,6 +64,7 @@ function tick() {
 
 function startScreen() {
     painter.drawBackground();
+    gameHandler.drawTutorial(50, 100);
     gameHandler.drawColorSelector();
     gameHandler.drawLanguageSelector();
     if (gameHandler.currentFlavour != null) {
@@ -73,29 +73,32 @@ function startScreen() {
 }
 
 function endScreen() {
-        
+    painter.colorText("game",137,100);
+    painter.colorText("over",137,140);
 }
 
 function gameScreen() {
-    if(!pauseVar) {
-        if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
-            candyBag.moveFallingCandies();
-            countingFramesFalling = 1;
-        } else {
-            countingFramesFalling++;
-        }
-    
+    if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
+        candyBag.moveFallingCandies();
+        countingFramesFalling = 1;
+    } else {
+        countingFramesFalling++;
+    }
+
+    if(countingCandyWaves < CANDY_WAVES) {
         if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
+            countingCandyWaves++;
             candyBag.generateCandies();
             countingFramesGenerating = 1;
         } else {
             countingFramesGenerating++;
         }
-        painter.drawBackground();
-        gameHandler.drawLanguageSelector(260, 25);
-        candyBag.drawCandyBag();
-        gameHandler.drawFriendUI(290, 90);
     }
+    
+    painter.drawBackground();
+    gameHandler.drawLanguageSelector(260, 25);
+    candyBag.drawCandyBag();
+    gameHandler.drawFriendUI(290, 90);
 }
 
 function mouseEvent(event) {
@@ -119,7 +122,10 @@ function mouseEventDuringGame(mouseX, mouseY) {
     } else {
         gameHandler.calculatePoints(eatenCount, eatenColor);
     }
-    
+
+    if(candyBag.remainingCandies == 0) {
+        gameState = endScreen;
+    }
 }
 
 function mouseEventStartGame(mouseX, mouseY) {
@@ -128,16 +134,11 @@ function mouseEventStartGame(mouseX, mouseY) {
         translator.domain = newLang;
     } else if (gameHandler.startButton.isWithin(mouseX, mouseY)) {
         gameHandler.updatePlayerFavoriteCandy();
+        gameHandler.generateRandomFriend();
         gameStateMouseUpdate = mouseEventDuringGame;
         gameState = gameScreen;
     } else {
         gameHandler.processClickedFlavors(mouseX, mouseY);
-    }
-}
-
-function pauseGame(event) {
-    if(event.keyCode == 32) {
-        pauseVar = !pauseVar;
     }
 }
 

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-04-20 22:35+0300\n"
-"PO-Revision-Date: 2019-04-20 22:35+0300\n"
+"POT-Creation-Date: 2019-04-21 21:34+0300\n"
+"PO-Revision-Date: 2019-04-21 21:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -19,34 +19,45 @@ msgstr ""
 "X-Poedit-SearchPath-4: main.js\n"
 "X-Poedit-SearchPath-5: Painter.js\n"
 
-#: Candy.js:22
-msgid "red"
-msgstr "strawberry"
-
-#: Candy.js:23
-msgid "yellow"
-msgstr "lemon"
-
-#: Candy.js:24
-msgid "purple"
-msgstr "prune"
-
-#: Candy.js:25
-msgid "green"
-msgstr "kiwi"
-
-#: Candy.js:26
-msgid "blue"
-msgstr "blueberry"
-
 #: GameHandling.js:74
 msgid "points"
 msgstr "points"
 
-#: main.js:35
+#: GameHandling.js:85
+msgid "You and your friend just bought a a candy bag!"
+msgstr "You and your friend just bought a a candy bag!"
+
+#: GameHandling.js:86
+msgid "Select from below your favorite candy flavor,"
+msgstr "Select from below your favorite candy flavor,"
+
+#: GameHandling.js:87
+msgid "give to your friend the candies of their"
+msgstr "give to your friend the candies with their"
+
+#: GameHandling.js:88
+msgid "favorite flavor and collect as many points as you can!"
+msgstr "favorite flavor and collect as many points as you can!"
+
+#: main.js:36
 msgid "LOADING IMAGES"
 msgstr "LOADING IMAGES"
 
 #: main.js:71
 msgid "START GAME"
 msgstr "START GAME"
+
+msgid "red"
+msgstr "strawberry"
+
+msgid "yellow"
+msgstr "lemon"
+
+msgid "purple"
+msgstr "prune"
+
+msgid "green"
+msgstr "kiwi"
+
+msgid "blue"
+msgstr "blueberry"

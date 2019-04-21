@@ -18,6 +18,7 @@ class CandyBag {
         this.fallingCandiesAfterEx = new Array(CANDY_BAG_COLS);
         this.lowestFreeSpace = new Array(CANDY_BAG_COLS);
         this.painter = painter;
+        this.remainingCandies = 0;
     }
 
     reset() {
@@ -48,6 +49,7 @@ class CandyBag {
                 auxArray.splice(generatedPosition,1);
                 this.candyBag[indexInGeneratedPosition] = new Candy();
             }
+            this.remainingCandies += GENERATE_CANDIES_AMOUNT;
         }
     }
     
@@ -232,7 +234,8 @@ class CandyBag {
             let drawAtY = BAG_LEFT_CORNER_Y + (Math.floor(auxCandy.indexExplosion/CANDY_BAG_COLS)*TILE_SIZE_H);
             this.painter.drawExplosion(auxCandy, drawAtX, drawAtY);
             if (auxCandy.isEaten == 0) {
-                this.explodingCandies.splice(i, 1);              
+                this.explodingCandies.splice(i, 1);
+                this.remainingCandies--;            
             }
         }
     }

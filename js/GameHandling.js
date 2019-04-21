@@ -17,7 +17,9 @@ const UI_FRIEND_H = 6;
 const UI_PLAYER_H = 4;
 const UI_W = 5;
 const UI_SEPARATION = 0.5;
-const SAME_CANDY_POINTS = 15;
+const UI_TUTORIAL_W = 10;
+const UI_TUTORIAL_H = 3;
+
 const SAME_COLOR_POINTS = 15;
 const OTHER_CANDY_POINTS = 5;
 
@@ -25,7 +27,7 @@ class GameHandling {
 
     constructor(painter) {
         this.friendFavCandy = null;
-        this.playerFavCandy = new Candy(undefined, undefined, false);
+        this.playerFavCandy = null;
         this.friendFavCandyCount = 0;
         this.playerFavCandyCount = 0;
         this.friendMoodPoints = 50;
@@ -49,9 +51,7 @@ class GameHandling {
     }
     
     updatePlayerFavoriteCandy() {
-        console.log("prev " + this.playerFavCandy.candyColor + " current " + CANDY_COLORS_COLS[this.currentFlavour]);
-        this.playerFavCandy.candyColor = CANDY_COLORS_COLS[this.currentFlavour];
-        console.log("prev " + this.playerFavCandy.candyColor + " current " + CANDY_COLORS_COLS[this.currentFlavour]);
+        this.playerFavCandy = this.flavorButtons[this.currentFlavour].candy;
         this.currentFlavour = null;
     }
 
@@ -74,11 +74,27 @@ class GameHandling {
         this.painter.colorText(_("points"), x+((TILE_SIZE_W*UI_W)/2), y+separation+160);
     }
 
+    drawTutorial(x, y) {
+        let centerPoint =  x+(TILE_SIZE_W*(UI_TUTORIAL_W/2));
+        for (let col = 0; col < UI_TUTORIAL_W; col++) {
+            for (let row = 0; row < UI_TUTORIAL_H; row++) {
+                this.painter.drawTile(0, x + (col*TILE_SIZE_W), y + (row*TILE_SIZE_H));
+            }
+        }
+        
+        this.painter.colorText(_("You and your friend just bought a a candy bag!"), centerPoint, y+35, undefined, "15px");
+        this.painter.colorText(_("Select from below your favorite candy flavor,"), centerPoint, y+60, undefined, "15px");
+        this.painter.colorText(_("give to your friend the candies of their favorite"), centerPoint, y+85, undefined, "15px");
+        this.painter.colorText(_("flavor and collect as many points as you can!"), centerPoint, y+110, undefined, "15px");
+        
+    }
+
     initializeTasteSelector(x = 100, y = 100) {
         let auxButton;
 
         for (let flavors = 0; flavors < CANDY_COLORS_COLS.length; flavors++) {
             auxButton = new Button(x + (2*TILE_SIZE_W*(flavors)), y, TILE_SIZE_W*2, TILE_SIZE_H*3);
+            auxButton.candy = new Candy(CANDY_TYPES_ROWS[flavors], CANDY_COLORS_COLS[flavors], false);
             this.flavorButtons.push(auxButton);
         }
     }
@@ -112,7 +128,7 @@ class GameHandling {
                     if(this.flavorButtons[lang].isWithin(mouseX, mouseY)) {
                         if(this.flavorButtons[lang].selected) {
                             this.flavorButtons[lang].selected = false;
-                            this.currentFlavour = null;
+                            this.playerFavCandy = null;
                         } else {
                             if(this.currentFlavour != null) {
                                 this.flavorButtons[this.currentFlavour].selected = false;
@@ -172,12 +188,11 @@ class GameHandling {
     }
 
     drawColorSelector() {
-        let auxCandy = null;
         let underline = false;
         let tileType = 0;
 
         for (let flavors = 0; flavors < this.flavorButtons.length; flavors++) {
-            auxCandy = new Candy(CANDY_TYPES_ROWS[flavors], CANDY_COLORS_COLS[flavors], false);
+            
             if (this.flavorButtons[flavors].selected) {
                 tileType = 1;
                 underline = true;
@@ -191,8 +206,9 @@ class GameHandling {
             this.painter.drawTile(tileType, this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY);
             this.painter.drawTile(tileType, this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + TILE_SIZE_H);
             this.painter.drawTile(tileType, this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2*TILE_SIZE_H));
-            this.painter.drawCandy(auxCandy, this.flavorButtons[flavors].posX+(TILE_SIZE_W/2), this.flavorButtons[flavors].posY+(TILE_SIZE_H/2));
-            this.painter.colorText(auxCandy.candyColorsTranslated[flavors], this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2.5*TILE_SIZE_H), undefined, "15px", underline);
+            this.painter.drawCandy(this.flavorButtons[flavors].candy, this.flavorButtons[flavors].posX+(TILE_SIZE_W/2), this.flavorButtons[flavors].posY+(TILE_SIZE_H/2));
+            //this.painter.colorText(auxCandy.candyColorsTranslated[flavors], this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2.5*TILE_SIZE_H), undefined, "15px", underline);
+            this.painter.colorText(_(CANDY_COLORS_COLS[flavors]), this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2.5*TILE_SIZE_H), undefined, "15px", underline);
         }
     }
 
