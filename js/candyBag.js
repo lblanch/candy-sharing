@@ -6,6 +6,7 @@ const BAG_LEFT_CORNER_X = 25;
 const BAG_LEFT_CORNER_Y = 25;
 const CANDY_BAG_ROWS = 12;
 const CANDY_BAG_COLS = 5;
+const CANDY_BAG_PREFILLED_ROWS = 6;
 
 const GENERATE_CANDIES_AMOUNT = 3; //less than CANDY_BAG_COLS!
 
@@ -28,6 +29,19 @@ class CandyBag {
                                 4 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1))];
     }
     
+    prefillCandybag() {
+        let bagIndex;
+        
+        for (let col = 0; col < CANDY_BAG_COLS; col++) {
+            for(let row=CANDY_BAG_ROWS-1; row > CANDY_BAG_PREFILLED_ROWS; row--) {
+                bagIndex = row*CANDY_BAG_COLS+col;
+                this.candyBag[bagIndex] = new Candy();
+                this.candyBag[bagIndex].isFalling = false;
+                this.remainingCandies++;
+            }
+        }
+    }
+
     generateCandies() {
         let generatedPosition;
         let indexInGeneratedPosition;

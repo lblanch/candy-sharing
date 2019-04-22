@@ -2,7 +2,7 @@ import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
 import {CANDY_TYPES_ROWS, CANDY_COLORS_COLS} from "./Candy.js";
 import Candy from "./Candy.js";
 import Button from "./Button.js";
-import { _ } from "./main.js";
+import { getRandomInt, _ } from "./main.js";
 
 //const FRIEND_STATUS = ["neutral", "happy", "joy", "surprise", "unhappy", "disgusted"];
 const FRIEND_STATUS = ["neutral"];
@@ -38,21 +38,33 @@ class GameHandling {
         this.supportedLanguages = Array();
         this.flavorButtons = Array();
         this.startButton = null;
+        this.resetButton = null;
+    }
+
+    reset() {
+        this.playerFavCandy = null;
+        this.friendFavCandy = null;
+        console.log(this.flavorButtons);
+        console.log(this.currentFlavour);
+        this.flavorButtons[this.currentFlavour].selected = false;
+        this.currentFlavour = null;
+        this.playerFavCandyCount = 0;
+        this.friendFavCandyCount = 0;
+        this.friendMoodPoints = 50;
+        this.playerPoints = 0;
     }
 
     generateRandomFriend() {
-        //chose random candy/color for friend, make sure it's different from player's
-        this.friendFavCandy = new Candy();
-        if (this.friendFavCandy.candyColor == this.playerFavCandy.candyColor) {
-            this.friendFavCandy.randomizeColor(this.playerFavCandy.candyColor);
-        }
-        
+        let index = CANDY_COLORS_COLS.indexOf(this.playerFavCandy.candyColor);
+        let auxColorsArray = CANDY_COLORS_COLS.slice();
+        auxColorsArray.splice(index,1);
+        this.friendFavCandy = new Candy(undefined, auxColorsArray[getRandomInt(auxColorsArray.length)]);
         this.friendFavCandy.isFalling = false;
     }
     
     updatePlayerFavoriteCandy() {
         this.playerFavCandy = this.flavorButtons[this.currentFlavour].candy;
-        this.currentFlavour = null;
+        //this.currentFlavour = null;
     }
 
     drawFriendUI(x, y) {
@@ -121,6 +133,10 @@ class GameHandling {
         this.startButton = new Button(x, y, TILE_SIZE_W*3, TILE_SIZE_H);
     }
 
+    initializeResetGameButton(x, y) {
+        this.resetButton = new Button(x, y, TILE_SIZE_W*4, TILE_SIZE_H);
+    }
+
     processClickedFlavors(mouseX, mouseY) {
         if(this.flavorButtons[0].posX <= mouseX && (this.flavorButtons[this.flavorButtons.length-1].posX + this.flavorButtons[this.flavorButtons.length-1].width) > mouseX) {
             if(this.flavorButtons[0].posY <= mouseY && (this.flavorButtons[0].posY + this.flavorButtons[0].height) > mouseY) {
@@ -161,12 +177,21 @@ class GameHandling {
         return selectedLang;
     }
 
-    drawStartGameButton(startText) {
+    drawStartGameButton() {
         this.painter.drawTile(0, this.startButton.posX, this.startButton.posY);
         this.painter.drawTile(0, this.startButton.posX + TILE_SIZE_W, this.startButton.posY);
         this.painter.drawTile(0, this.startButton.posX + 2*TILE_SIZE_W, this.startButton.posY);
         
-        this.painter.colorText(startText, this.startButton.posX + (1.5*TILE_SIZE_W), this.startButton.posY + (0.5*TILE_SIZE_H)+2, undefined, "15px");   
+        this.painter.colorText(_("START GAME"), this.startButton.posX + (1.5*TILE_SIZE_W), this.startButton.posY + (0.5*TILE_SIZE_H)+2, undefined, "15px");   
+    }
+
+    drawResetGameButton() {
+        this.painter.drawTile(1, this.resetButton.posX, this.resetButton.posY);
+        this.painter.drawTile(1, this.resetButton.posX + TILE_SIZE_W, this.resetButton.posY);
+        this.painter.drawTile(1, this.resetButton.posX + 2*TILE_SIZE_W, this.resetButton.posY);
+        this.painter.drawTile(1, this.resetButton.posX + 3*TILE_SIZE_W, this.resetButton.posY);
+        
+        this.painter.colorText(_("RESTART GAME"), this.resetButton.posX + (2*TILE_SIZE_W), this.resetButton.posY + (0.5*TILE_SIZE_H)+2, undefined, "15px");   
     }
 
     drawLanguageSelector() {

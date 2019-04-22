@@ -39,10 +39,12 @@ window.onload = function () {
     painter.imageLoader.onDoneLoading(startGame);
     painter.loadGameImages();
 
+    candyBag = new CandyBag(painter);
     gameHandler = new GameHandling(painter);
     gameHandler.initializeLanguageSelector(translator.domain, 265, 25);
     gameHandler.initializeTasteSelector(50, 260);
     gameHandler.initializeStartGameButton(205, 450);
+    gameHandler.initializeResetGameButton(53, 180);
 
     canvas.addEventListener('mouseup', mouseEvent);
     //document.addEventListener('keyup', pauseGame);
@@ -51,13 +53,9 @@ window.onload = function () {
 }
 
 function startGame() {
-    candyBag = new CandyBag(painter);
-    candyBag.reset();
-
     //1000 = 1 sec in milisecs
     setInterval(tick, 1000/FRAMES_PER_SECOND);
 }
-
 function tick() {
     gameState();
 }
@@ -68,13 +66,14 @@ function startScreen() {
     gameHandler.drawColorSelector();
     gameHandler.drawLanguageSelector();
     if (gameHandler.currentFlavour != null) {
-        gameHandler.drawStartGameButton(_("START GAME"));
+        gameHandler.drawStartGameButton();
     }
 }
 
 function endScreen() {
-    painter.colorText("game",137,100);
-    painter.colorText("over",137,140);
+    painter.colorText(_("game"),137,100);
+    painter.colorText(_("over"),137,140);
+    gameHandler.drawResetGameButton();
 }
 
 function gameScreen() {
@@ -112,7 +111,6 @@ function mouseEvent(event) {
 }
 
 function mouseEventDuringGame(mouseX, mouseY) {
-    
     let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY, gameHandler.friendFavCandy.candyColor);
     if ( eatenCount == 0) {
         let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
@@ -124,7 +122,25 @@ function mouseEventDuringGame(mouseX, mouseY) {
     }
 
     if(candyBag.remainingCandies == 0) {
+        gameStateMouseUpdate = mouseEventEndGame;
         gameState = endScreen;
+    }
+}
+
+function mouseEventEndGame(mouseX, mouseY) {
+    if(gameHandler.resetButton.isWithin(mouseX, mouseY)) {
+        countingFramesFalling = 1;
+        countingCandyWaves = 0;
+        countingFramesGenerating = 1;
+        candyBag.reset();
+        gameHandler.reset();
+        gameStateMouseUpdate = mouseEventStartGame;
+        gameState = startScreen;
+    } else {
+        let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
+        if(newLang != null) {
+            translator.domain = newLang;
+        }
     }
 }
 
@@ -133,6 +149,7 @@ function mouseEventStartGame(mouseX, mouseY) {
     if(newLang != null) {
         translator.domain = newLang;
     } else if (gameHandler.startButton.isWithin(mouseX, mouseY)) {
+        candyBag.prefillCandybag();
         gameHandler.updatePlayerFavoriteCandy();
         gameHandler.generateRandomFriend();
         gameStateMouseUpdate = mouseEventDuringGame;

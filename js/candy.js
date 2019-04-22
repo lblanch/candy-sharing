@@ -20,14 +20,6 @@ class Candy {
         this.explosionPicIndex = (CANDY_COLORS_COLS.indexOf(this.candyColor)*CANDY_EXPLOSIONS_FRAMES) + (CANDY_COLORS_COLS.length * CANDY_TYPES_ROWS.length) - 1;
     }
 
-    randomizeColor(toBeAvoided = null) {
-        //update candyPicIndex AND explosionPicIndex
-    }
-
-    randomizeCandy(toBeAvoided = null) {
-        //update candyPicIndex
-    }
-
     set candyColor(value) {
         if (value < 0 || value >= CANDY_COLORS_COLS.length) {
             throw new Error("Color out of bounds");
