@@ -6,10 +6,12 @@ let canvas, canvasContext;
 let countingFramesFalling = 1;
 let countingCandyWaves = 0;
 let countingFramesGenerating = 1;
+let countingSeconds = 1;
 let painter = null;
 let candyBag = null;
 let gameHandler = null;
 let translator = null;
+let timer = 0;
 
 //functions that change according to game state
 let gameState = null;
@@ -21,6 +23,8 @@ const FRAMES_GENERATE_CANDIES = 140;
 const FRAMES_MOVE_FALLING_CANDIES = 70;
 const FRAMES_PER_SECOND = 30;
 const CANDY_WAVES = 6;
+//5 min = 300 sec
+const TIMER_SEC = 300;
 
 window.onload = function () {
     
@@ -77,6 +81,16 @@ function endScreen() {
 }
 
 function gameScreen() {
+    if(countingSeconds == FRAMES_PER_SECOND) {
+        if (timer == 0) {
+            gameStateMouseUpdate = mouseEventEndGame;
+            gameState = endScreen;
+        } else {
+            countingSeconds = 0;
+            timer--;
+        }
+    }
+
     if (countingFramesFalling == FRAMES_MOVE_FALLING_CANDIES) {
         candyBag.moveFallingCandies();
         countingFramesFalling = 1;
@@ -93,10 +107,11 @@ function gameScreen() {
             countingFramesGenerating++;
         }
     }
-    
+    countingSeconds++;
     painter.drawBackground();
-    gameHandler.drawLanguageSelector(260, 25);
+    gameHandler.drawLanguageSelector();
     candyBag.drawCandyBag();
+    gameHandler.drawTimer(timer, 138, 20);
     gameHandler.drawFriendUI(290, 90);
 }
 
@@ -121,10 +136,10 @@ function mouseEventDuringGame(mouseX, mouseY) {
         gameHandler.calculatePoints(eatenCount, eatenColor);
     }
 
-    if(candyBag.remainingCandies == 0) {
+    /*if(candyBag.remainingCandies == 0) {
         gameStateMouseUpdate = mouseEventEndGame;
         gameState = endScreen;
-    }
+    }*/
 }
 
 function mouseEventEndGame(mouseX, mouseY) {
@@ -154,6 +169,7 @@ function mouseEventStartGame(mouseX, mouseY) {
         gameHandler.generateRandomFriend();
         gameStateMouseUpdate = mouseEventDuringGame;
         gameState = gameScreen;
+        timer = TIMER_SEC;
     } else {
         gameHandler.processClickedFlavors(mouseX, mouseY);
     }

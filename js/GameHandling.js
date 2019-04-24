@@ -101,6 +101,14 @@ class GameHandling {
         
     }
 
+    drawTimer(seconds, x, y) {
+
+        let timerText = Math.floor(seconds/60) + ":" + (seconds % 60);
+
+        this.painter.colorRect(x-30, y-17, 60, 20, 'rgba(97, 57, 94, 0.9)');
+        this.painter.colorText(timerText, x, y, undefined, "20px");
+    }
+
     initializeTasteSelector(x = 100, y = 100) {
         let auxButton;
 
@@ -186,10 +194,10 @@ class GameHandling {
     }
 
     drawResetGameButton() {
-        this.painter.drawTile(1, this.resetButton.posX, this.resetButton.posY);
-        this.painter.drawTile(1, this.resetButton.posX + TILE_SIZE_W, this.resetButton.posY);
-        this.painter.drawTile(1, this.resetButton.posX + 2*TILE_SIZE_W, this.resetButton.posY);
-        this.painter.drawTile(1, this.resetButton.posX + 3*TILE_SIZE_W, this.resetButton.posY);
+        this.painter.drawTile(0, this.resetButton.posX, this.resetButton.posY);
+        this.painter.drawTile(0, this.resetButton.posX + TILE_SIZE_W, this.resetButton.posY);
+        this.painter.drawTile(0, this.resetButton.posX + 2*TILE_SIZE_W, this.resetButton.posY);
+        this.painter.drawTile(0, this.resetButton.posX + 3*TILE_SIZE_W, this.resetButton.posY);
         
         this.painter.colorText(_("RESTART GAME"), this.resetButton.posX + (2*TILE_SIZE_W), this.resetButton.posY + (0.5*TILE_SIZE_H)+2, undefined, "15px");   
     }
