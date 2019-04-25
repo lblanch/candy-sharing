@@ -4,7 +4,7 @@ import GameHandling from './GameHandling.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
-let countingCandyWaves = 0;
+//let countingCandyWaves = 0;
 let countingFramesGenerating = 1;
 let countingSeconds = 1;
 let painter = null;
@@ -98,15 +98,15 @@ function gameScreen() {
         countingFramesFalling++;
     }
 
-    if(countingCandyWaves < CANDY_WAVES) {
+    //if(countingCandyWaves < CANDY_WAVES) {
         if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
-            countingCandyWaves++;
+            //countingCandyWaves++;
             candyBag.generateCandies();
             countingFramesGenerating = 1;
         } else {
             countingFramesGenerating++;
         }
-    }
+    //}
     countingSeconds++;
     painter.drawBackground();
     gameHandler.drawLanguageSelector();

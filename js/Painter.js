@@ -51,7 +51,8 @@ class Painter {
     }
 
     drawFriend(friendIndex, x, y) {
-        this.canvasContext.drawImage(this.imageLoader.pics[this.friendOffset + friendIndex], x, y);
+        let exImg = this.imageLoader.pics[this.friendOffset + friendIndex];
+        this.canvasContext.drawImage(exImg, x-(exImg.width/2), y-(exImg.height/2));
     }
 
     colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {

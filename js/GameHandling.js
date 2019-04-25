@@ -4,8 +4,8 @@ import Candy from "./Candy.js";
 import Button from "./Button.js";
 import { getRandomInt, _ } from "./main.js";
 
-//const FRIEND_STATUS = ["neutral", "happy", "joy", "surprise", "unhappy", "disgusted"];
-const FRIEND_STATUS = ["neutral"];
+const FRIEND_STATUS = ["neutral", "happy", "joy", "sad", "disgust"];
+//const FRIEND_STATUS = ["neutral"];
 const FOLDER_FRIEND = "friend/";
 
 //When adding new languages or modifying the order, do it in BOTH arrays!
@@ -77,7 +77,7 @@ class GameHandling {
             }
         }
         let separation = (UI_FRIEND_H + UI_SEPARATION) * TILE_SIZE_H;
-        this.painter.drawFriend(0, x+37, y+15);
+        this.painter.drawFriend(0, x+(2.5*TILE_SIZE_W), y+(2.3*TILE_SIZE_H));
         this.painter.drawCandy(this.friendFavCandy, x+37, y+208);
         this.painter.colorText(" x " + this.friendFavCandyCount, x+130, y+240);
         this.painter.drawCandy(this.playerFavCandy, x+37, y+separation+15);
@@ -102,8 +102,11 @@ class GameHandling {
     }
 
     drawTimer(seconds, x, y) {
-
-        let timerText = Math.floor(seconds/60) + ":" + (seconds % 60);
+        let auxSeconds = seconds % 60;
+        if (auxSeconds.toString().length < 2) {
+            auxSeconds = "0" + auxSeconds; 
+        }
+        let timerText = Math.floor(seconds/60) + ":" + auxSeconds;
 
         this.painter.colorRect(x-30, y-17, 60, 20, 'rgba(97, 57, 94, 0.9)');
         this.painter.colorText(timerText, x, y, undefined, "20px");
