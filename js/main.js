@@ -88,6 +88,9 @@ function gameScreen() {
         } else {
             countingSeconds = 0;
             timer--;
+            if(gameHandler.friendMoodPoints > 0) {
+                gameHandler.friendMoodPoints--;
+            }
         }
     }
 
@@ -145,7 +148,7 @@ function mouseEventDuringGame(mouseX, mouseY) {
 function mouseEventEndGame(mouseX, mouseY) {
     if(gameHandler.resetButton.isWithin(mouseX, mouseY)) {
         countingFramesFalling = 1;
-        countingCandyWaves = 0;
+        //countingCandyWaves = 0;
         countingFramesGenerating = 1;
         candyBag.reset();
         gameHandler.reset();

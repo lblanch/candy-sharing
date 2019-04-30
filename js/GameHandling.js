@@ -4,9 +4,10 @@ import Candy from "./Candy.js";
 import Button from "./Button.js";
 import { getRandomInt, _ } from "./main.js";
 
-const FRIEND_STATUS = ["neutral", "happy", "joy", "sad", "disgust"];
+const FRIEND_STATUS = ["sad", "disgust", "neutral", "happy", "joy"];
 //const FRIEND_STATUS = ["neutral"];
 const FOLDER_FRIEND = "friend/";
+const FRIEND_START_MOOD = 29;
 
 //When adding new languages or modifying the order, do it in BOTH arrays!
 const SUPPORTED_LANGUAGES_CODES = ['ca_ES', 'es_ES', 'en'];
@@ -30,7 +31,7 @@ class GameHandling {
         this.playerFavCandy = null;
         this.friendFavCandyCount = 0;
         this.playerFavCandyCount = 0;
-        this.friendMoodPoints = 50;
+        this.friendMoodPoints = FRIEND_START_MOOD;
         this.playerPoints = 0;
         this.painter = painter;
         this.currentLanguage = null;
@@ -44,13 +45,11 @@ class GameHandling {
     reset() {
         this.playerFavCandy = null;
         this.friendFavCandy = null;
-        console.log(this.flavorButtons);
-        console.log(this.currentFlavour);
         this.flavorButtons[this.currentFlavour].selected = false;
         this.currentFlavour = null;
         this.playerFavCandyCount = 0;
         this.friendFavCandyCount = 0;
-        this.friendMoodPoints = 50;
+        this.friendMoodPoints = FRIEND_START_MOOD;
         this.playerPoints = 0;
     }
 
@@ -68,6 +67,8 @@ class GameHandling {
     }
 
     drawFriendUI(x, y) {
+        let imgIndex = Math.floor(this.friendMoodPoints/10);
+        console.log(imgIndex);
         for (let col = 0; col < UI_W; col++) {
             for (let row = 0; row < Math.max(UI_FRIEND_H, UI_PLAYER_H); row++) {
                 this.painter.drawTile(1, x + (col*TILE_SIZE_W), y + (row*TILE_SIZE_H));
@@ -77,7 +78,7 @@ class GameHandling {
             }
         }
         let separation = (UI_FRIEND_H + UI_SEPARATION) * TILE_SIZE_H;
-        this.painter.drawFriend(0, x+(2.5*TILE_SIZE_W), y+(2.3*TILE_SIZE_H));
+        this.painter.drawFriend(imgIndex, x+(2.5*TILE_SIZE_W), y+(2.3*TILE_SIZE_H));
         this.painter.drawCandy(this.friendFavCandy, x+37, y+208);
         this.painter.colorText(" x " + this.friendFavCandyCount, x+130, y+240);
         this.painter.drawCandy(this.playerFavCandy, x+37, y+separation+15);
@@ -257,6 +258,10 @@ class GameHandling {
             this.playerPoints += eatenCount * OTHER_CANDY_POINTS;
             if (eatenColor == this.friendFavCandy.candyColor) {
                 this.friendFavCandyCount += eatenCount;
+                this.friendMoodPoints += (eatenCount * 5);
+                if (this.friendMoodPoints > 40) {
+                    this.friendMoodPoints = 40;
+                }
             } 
         }
     }
