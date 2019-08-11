@@ -68,7 +68,6 @@ class GameHandling {
 
     drawFriendUI(x, y) {
         let imgIndex = Math.floor(this.friendMoodPoints/10);
-        console.log(imgIndex);
         for (let col = 0; col < UI_W; col++) {
             for (let row = 0; row < Math.max(UI_FRIEND_H, UI_PLAYER_H); row++) {
                 this.painter.drawTile(1, x + (col*TILE_SIZE_W), y + (row*TILE_SIZE_H));
@@ -259,8 +258,8 @@ class GameHandling {
             if (eatenColor == this.friendFavCandy.candyColor) {
                 this.friendFavCandyCount += eatenCount;
                 this.friendMoodPoints += (eatenCount * 5);
-                if (this.friendMoodPoints > 40) {
-                    this.friendMoodPoints = 40;
+                if (this.friendMoodPoints > 49) {
+                    this.friendMoodPoints = 49;
                 }
             } 
         }

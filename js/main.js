@@ -1,6 +1,7 @@
 import Painter from './Painter.js';
 import CandyBag from './CandyBag.js';
 import GameHandling from './GameHandling.js';
+import i18n from '/lib/gettext.esm.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
@@ -13,23 +14,30 @@ let gameHandler = null;
 let translator = null;
 let timer = 0;
 
+
 //functions that change according to game state
 let gameState = null;
 let gameStateMouseUpdate = null;
 
 //FRAMES_GENERATE_CANDIES needs to be bigger than FRAMES_MOVE_FALLING_CANDIES,
 //so the candies fall faster than are being generated
-const FRAMES_GENERATE_CANDIES = 140; 
-const FRAMES_MOVE_FALLING_CANDIES = 70;
+const FRAMES_GENERATE_CANDIES = 100; 
+const FRAMES_MOVE_FALLING_CANDIES = 45;
 const FRAMES_PER_SECOND = 30;
-const CANDY_WAVES = 6;
+//const CANDY_WAVES = 6;
+
 //5 min = 300 sec
-const TIMER_SEC = 300;
+const TIMER_SEC = 60;
 
 window.onload = function () {
     
-    translator = new Gettext({"domain" : "en"});
-
+    translator = new i18n();
+    //translator.setLocale('es_ES');
+    
+    loadJSON('lang/' + translator.getLocale() + '.json', function(response) {
+        translator.loadJSON(response);
+    });
+    
     canvas = document.getElementById('gameCanvas');
     canvasContext = canvas.getContext('2d');
 
@@ -37,7 +45,7 @@ window.onload = function () {
 
     //show message while we do image loading
     painter.colorRect(0, 0, canvas.width, canvas.height, 'black');
-    painter.colorText(_("LOADING IMAGES"), canvas.width/2, canvas.height/2, 'red');
+    painter.colorText(_("LOADING"), canvas.width/2, canvas.height/2, 'red');
     
     //define function to be called after loading the images, the one that starts de game
     painter.imageLoader.onDoneLoading(startGame);
@@ -45,7 +53,7 @@ window.onload = function () {
 
     candyBag = new CandyBag(painter);
     gameHandler = new GameHandling(painter);
-    gameHandler.initializeLanguageSelector(translator.domain, 265, 25);
+    gameHandler.initializeLanguageSelector(translator.getLocale(), 265, 25);
     gameHandler.initializeTasteSelector(50, 260);
     gameHandler.initializeStartGameButton(205, 450);
     gameHandler.initializeResetGameButton(53, 180);
@@ -129,12 +137,9 @@ function mouseEvent(event) {
 }
 
 function mouseEventDuringGame(mouseX, mouseY) {
-    let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY, gameHandler.friendFavCandy.candyColor);
-    if ( eatenCount == 0) {
-        let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
-        if(newLang != null) {
-            translator.domain = newLang;
-        }
+    let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY);
+    if (eatenCount == 0) {
+        processLanguageChange(gameHandler.processClickedLanguages(mouseX, mouseY));
     } else {
         gameHandler.calculatePoints(eatenCount, eatenColor);
     }
@@ -155,27 +160,23 @@ function mouseEventEndGame(mouseX, mouseY) {
         gameStateMouseUpdate = mouseEventStartGame;
         gameState = startScreen;
     } else {
-        let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
-        if(newLang != null) {
-            translator.domain = newLang;
-        }
+        processLanguageChange(gameHandler.processClickedLanguages(mouseX, mouseY));
     }
 }
 
 function mouseEventStartGame(mouseX, mouseY) {
-    let newLang = gameHandler.processClickedLanguages(mouseX, mouseY);
-    if(newLang != null) {
-        translator.domain = newLang;
-    } else if (gameHandler.startButton.isWithin(mouseX, mouseY)) {
-        candyBag.prefillCandybag();
-        gameHandler.updatePlayerFavoriteCandy();
-        gameHandler.generateRandomFriend();
-        gameStateMouseUpdate = mouseEventDuringGame;
-        gameState = gameScreen;
-        timer = TIMER_SEC;
-    } else {
-        gameHandler.processClickedFlavors(mouseX, mouseY);
-    }
+    if (!processLanguageChange(gameHandler.processClickedLanguages(mouseX, mouseY))) {
+        if (gameHandler.startButton.isWithin(mouseX, mouseY)) {
+            candyBag.prefillCandybag();
+            gameHandler.updatePlayerFavoriteCandy();
+            gameHandler.generateRandomFriend();
+            gameStateMouseUpdate = mouseEventDuringGame;
+            gameState = gameScreen;
+            timer = TIMER_SEC;
+        } else {
+            gameHandler.processClickedFlavors(mouseX, mouseY);
+        }
+    } 
 }
 
 //will return int between 0 and max-1
@@ -186,4 +187,32 @@ export function getRandomInt(max) {
 //shortcut function for translating
 export function _(msgid) { 
     return translator.gettext(msgid); 
+}
+
+//function to load a new language
+function loadJSON(langJsonFile, callback) {   
+    let xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', langJsonFile, true);
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4 && (xobj.status == "200" || xobj.status == "304")) {
+            callback(xobj.responseText);
+        }
+    };
+    xobj.send(null);  
+}
+
+function processLanguageChange(newLang) {
+    if(newLang != null) {
+        if(!translator.isJSONLoaded(newLang)) {
+            loadJSON('lang/' + newLang + '.json', function(response) {
+                translator.loadJSON(response);
+                translator.setLocale(newLang);
+            });
+        } else {
+            translator.setLocale(newLang);
+        }
+        return true;
+    } 
+    return false;
 }

@@ -1,0 +1,18 @@
+{
+    "": {
+        "language": "ca_ES",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+    },
+    "points": "punts",
+    "You and your friend just bought a a candy bag!": "T’acabes de comprar una bossa de llaminadures!",
+    "Select from below your favorite candy flavor,": "Selecciona a sota el seu sabor preferit,",
+    "give to your friend the candies of their favorite": "dóna al teu amic les llaminadures del sabor que",
+    "flavor and collect as many points as you can!": "més li agrada i acumula tants punts com puguis!",
+    "LOADING IMAGES": "CARREGANT IMATGES",
+    "START GAME": "INICIAR JOC",
+    "red": "maduixa",
+    "yellow": "llimona",
+    "purple": "mora",
+    "green": "kiwi",
+    "blue": "neviu"
+}

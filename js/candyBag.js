@@ -16,7 +16,7 @@ class CandyBag {
         this.candyBag = new Array(CANDY_BAG_ROWS * CANDY_BAG_COLS);
         this.closeCandies = new Array();
         this.explodingCandies = new Array();
-        this.fallingCandiesAfterEx = new Array(CANDY_BAG_COLS);
+        //this.fallingCandiesAfterEx = new Array(CANDY_BAG_COLS);
         this.lowestFreeSpace = new Array(CANDY_BAG_COLS);
         this.painter = painter;
         this.remainingCandies = 0;
@@ -67,7 +67,7 @@ class CandyBag {
         }
     }
     
-    processClickedBagPosition(mouseX, mouseY, friendCandyColor) {
+    processClickedBagPosition(mouseX, mouseY) {
         let eatenCandies = 0;
         let eatenColor = null;
         if ((mouseX > BAG_LEFT_CORNER_X && mouseX <= ((CANDY_BAG_COLS * TILE_SIZE_W) + BAG_LEFT_CORNER_X)) && 
@@ -78,6 +78,7 @@ class CandyBag {
                 if (this.candyBag[clickedIndex] != null) {
                     if(!this.candyBag[clickedIndex].isFalling) {
                         this.closeCandies.push(clickedIndex);
+                        
                         let auxCandy = this.candyBag[clickedIndex];
                         eatenColor = auxCandy.candyColor;
                         auxCandy.isEaten++;
@@ -172,6 +173,7 @@ class CandyBag {
                 if (auxCandy != null) {
                     this.drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex);
                 }
+                this.painter.colorText(row + "-" + col, drawAtX+ 10, drawAtY + 10, undefined, "10px");
             }
         }
         this.drawExplosions();

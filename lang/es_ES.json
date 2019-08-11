@@ -1,0 +1,18 @@
+{
+    "": {
+        "language": "es_ES",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+    },
+    "points": "puntos",
+    "You and your friend just bought a a candy bag!": "Te acabas de comprar una bolsa de dulces!",
+    "Select from below your favorite candy flavor,": "Selecciona a continuación tu sabor favorito,",
+    "give to your friend the candies of their favorite": "regala a tu amigo los dulces de su sabor",
+    "flavor and collect as many points as you can!": "favorito y acumula tantos puntos como puedas!",
+    "LOADING IMAGES": "CARGANDO IMAGENES",
+    "START GAME": "INICIAR JUEGO",
+    "red": "fresa",
+    "yellow": "limón",
+    "purple": "mora",
+    "green": "kiwi",
+    "blue": "arandano"
+}

@@ -1,0 +1,18 @@
+{
+    "": {
+        "language": "en",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+    },
+    "points": "points",
+    "You and your friend just bought a a candy bag!": "You and your friend just bought a candy bag!",
+    "Select from below your favorite candy flavor,": "Select from below your favorite candy flavor,",
+    "give to your friend the candies of their": "give to your friend the candies with their",
+    "favorite flavor and collect as many points as you can!": "favorite flavor and collect as many points as you can!",
+    "LOADING IMAGES": "LOADING IMAGES",
+    "START GAME": "START GAME",
+    "red": "strawberry",
+    "yellow": "lemon",
+    "purple": "prune",
+    "green": "kiwi",
+    "blue": "blueberry"
+}
