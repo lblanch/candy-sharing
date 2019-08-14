@@ -1,17 +1,27 @@
 import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
-import {CANDY_TYPES_ROWS, CANDY_COLORS_COLS} from "./Candy.js";
+import { CANDY_TYPES_ROWS, CANDY_COLORS_COLS } from "./Candy.js";
 import Candy from "./Candy.js";
 import Button from "./Button.js";
 import { getRandomInt, _ } from "./main.js";
+import Message from './Message.js';
 
 const FRIEND_STATUS = ["sad", "disgust", "neutral", "happy", "joy"];
-//const FRIEND_STATUS = ["neutral"];
 const FOLDER_FRIEND = "friend/";
 const FRIEND_START_MOOD = 29;
 
 //When adding new languages or modifying the order, do it in BOTH arrays!
 const SUPPORTED_LANGUAGES_CODES = ['ca_ES', 'es_ES', 'en'];
 const SUPPORTED_LANGUAGES_NAMES = ['Català', 'Castellano', 'English'];
+
+//NOTE: FRAMES_MESSAGE needs to be bigger than FRAMES_MESSAGE_STATIC
+//Message is visible for FRAMES_MESSAGE amount of frames
+const FRAMES_MESSAGE = 35;
+//from 0 to FRAMES_MESSAGE_STATIC the message doens't move, then it moves towards points until FRAMES_MESSAGE
+const FRAMES_MESSAGE_STATIC = 30;
+
+//UI location
+const UI_FRIEND_X = 290; 
+const UI_FRIEND_Y = 90;
 
 //UI sizes in tiles
 const UI_FRIEND_H = 6;
@@ -21,8 +31,11 @@ const UI_SEPARATION = 0.5;
 const UI_TUTORIAL_W = 10;
 const UI_TUTORIAL_H = 3;
 
+//POINTS PER CANDY EATEN
 const SAME_COLOR_POINTS = 15;
 const OTHER_CANDY_POINTS = 5;
+//BONUS POINTS PER CANDY IN A COMBO
+const COMBO_POINTS = 5;
 
 class GameHandling {
 
@@ -40,6 +53,7 @@ class GameHandling {
         this.flavorButtons = Array();
         this.startButton = null;
         this.resetButton = null;
+        this.inGameMessages = Array();
     }
 
     reset() {
@@ -53,6 +67,17 @@ class GameHandling {
         this.playerPoints = 0;
     }
 
+    addInGameMessage(message, posX, posY, points) {
+        let separation = (UI_FRIEND_H + UI_SEPARATION) * TILE_SIZE_H;
+        let pointsX = UI_FRIEND_X+((TILE_SIZE_W*UI_W)/2);
+        let pointsY = UI_FRIEND_Y+separation+160;
+
+        let incrementX = (pointsX - posX)/(FRAMES_MESSAGE - FRAMES_MESSAGE_STATIC);
+        let incrementY = (pointsY - posY)/(FRAMES_MESSAGE - FRAMES_MESSAGE_STATIC);
+            
+        this.inGameMessages.push(new Message(message, posX, posY, incrementX, incrementY, points));
+    }
+
     generateRandomFriend() {
         let index = CANDY_COLORS_COLS.indexOf(this.playerFavCandy.candyColor);
         let auxColorsArray = CANDY_COLORS_COLS.slice();
@@ -63,10 +88,11 @@ class GameHandling {
     
     updatePlayerFavoriteCandy() {
         this.playerFavCandy = this.flavorButtons[this.currentFlavour].candy;
-        //this.currentFlavour = null;
     }
 
-    drawFriendUI(x, y) {
+    drawFriendUI() {
+        let x = UI_FRIEND_X; 
+        let y = UI_FRIEND_Y;
         let imgIndex = Math.floor(this.friendMoodPoints/10);
         for (let col = 0; col < UI_W; col++) {
             for (let row = 0; row < Math.max(UI_FRIEND_H, UI_PLAYER_H); row++) {
@@ -243,26 +269,59 @@ class GameHandling {
             this.painter.drawTile(tileType, this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + TILE_SIZE_H);
             this.painter.drawTile(tileType, this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2*TILE_SIZE_H));
             this.painter.drawCandy(this.flavorButtons[flavors].candy, this.flavorButtons[flavors].posX+(TILE_SIZE_W/2), this.flavorButtons[flavors].posY+(TILE_SIZE_H/2));
-            //this.painter.colorText(auxCandy.candyColorsTranslated[flavors], this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2.5*TILE_SIZE_H), undefined, "15px", underline);
             this.painter.colorText(_(CANDY_COLORS_COLS[flavors]), this.flavorButtons[flavors].posX + TILE_SIZE_W, this.flavorButtons[flavors].posY + (2.5*TILE_SIZE_H), undefined, "15px", underline);
         }
     }
 
+    drawInGameMessages() {
+        let x = 0;
+        let y = 0;
+
+        for (let i=0; i< this.inGameMessages.length; i++) {
+            if (this.inGameMessages[i].frameCounter <= FRAMES_MESSAGE) {
+                if (this.inGameMessages[i].frameCounter <= FRAMES_MESSAGE_STATIC) {
+                    x = this.inGameMessages[i].posX + getRandomInt(3);
+                    y = this.inGameMessages[i].posY + getRandomInt(3);
+                } else {
+                    this.inGameMessages[i].incrementPosition();
+                    x = this.inGameMessages[i].posX;
+                    y = this.inGameMessages[i].posY;
+                }
+                this.painter.inGameText(this.inGameMessages[i].message, x, y, undefined, "45px", '#ffffff');
+                this.inGameMessages[i].frameCounter++;
+            } else {
+                this.playerPoints += this.inGameMessages[i].points;
+                this.inGameMessages.splice(i, 1);
+            }
+        }
+    }
+
     calculatePoints(eatenCount, eatenColor) {
+        let points = 0;
+
+        //add bonus for combos
+        if (eatenCount > 3) {
+            points = eatenCount * COMBO_POINTS;
+        }
+
         if (eatenColor == this.playerFavCandy.candyColor) {
             this.playerFavCandyCount += eatenCount;
-            this.playerPoints += eatenCount * SAME_COLOR_POINTS;
-        }
-        else { 
-            this.playerPoints += eatenCount * OTHER_CANDY_POINTS;
+            points += eatenCount * SAME_COLOR_POINTS;
+        } else { 
+            points += eatenCount * OTHER_CANDY_POINTS;
             if (eatenColor == this.friendFavCandy.candyColor) {
                 this.friendFavCandyCount += eatenCount;
                 this.friendMoodPoints += (eatenCount * 5);
                 if (this.friendMoodPoints > 49) {
                     this.friendMoodPoints = 49;
                 }
+            } else if(this.friendMoodPoints > 0) {
+                this.friendMoodPoints-=3;
             } 
         }
+        //we don't add the points right away, we'll do so after the points message animation is over
+        //this.playerPoints += points;
+        return points;
     }
 
     static generateFriendFilenames() {

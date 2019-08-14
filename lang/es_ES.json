@@ -8,11 +8,9 @@
     "Select from below your favorite candy flavor,": "Selecciona a continuación tu sabor favorito,",
     "give to your friend the candies of their favorite": "regala a tu amigo los dulces de su sabor",
     "flavor and collect as many points as you can!": "favorito y acumula tantos puntos como puedas!",
-    "LOADING IMAGES": "CARGANDO IMAGENES",
     "START GAME": "INICIAR JUEGO",
-    "red": "fresa",
-    "yellow": "limón",
-    "purple": "mora",
-    "green": "kiwi",
-    "blue": "arandano"
+    "RESTART GAME": "REINICIAR JUEGO",
+    "LOADING": "CARGANDO",
+    "game": "fin del",
+    "over": "juego"
 }

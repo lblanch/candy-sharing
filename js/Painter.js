@@ -66,6 +66,7 @@ class Painter {
         this.canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
         this.canvasContext.fill();
     }
+
     colorText(showWords, textX, textY, fillColor = '#64bcf9', size = "40px", underline = false) {
         this.canvasContext.font = size + ' courier';
         this.canvasContext.fillStyle = fillColor;
@@ -74,8 +75,19 @@ class Painter {
         if (underline) {
             let text = this.canvasContext.measureText(showWords);
             this.canvasContext.fillRect(textX-(text.width/2), textY + 3, text.width, 2);
-        }    
+        }
     }
+
+    inGameText(showWords, textX, textY, fillColor = '#64bcf9', size = "40px", strokeColor = '#000000') {
+        this.canvasContext.font = 'bold ' + size + ' courier';;
+        this.canvasContext.fillStyle = fillColor;
+        this.canvasContext.textAlign = "left"; 
+        this.canvasContext.strokeStyle = strokeColor;
+        this.canvasContext.lineWidth = 3;
+        this.canvasContext.strokeText(showWords, textX, textY);
+        this.canvasContext.fillText(showWords, textX, textY);
+    }
+
 }
 
 export default Painter;

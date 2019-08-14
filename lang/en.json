@@ -6,13 +6,11 @@
     "points": "points",
     "You and your friend just bought a a candy bag!": "You and your friend just bought a candy bag!",
     "Select from below your favorite candy flavor,": "Select from below your favorite candy flavor,",
-    "give to your friend the candies of their": "give to your friend the candies with their",
-    "favorite flavor and collect as many points as you can!": "favorite flavor and collect as many points as you can!",
-    "LOADING IMAGES": "LOADING IMAGES",
+    "give to your friend the candies of their favorite": "give to your friend the candies with their",
+    "flavor and collect as many points as you can!": "favorite flavor and collect as many points as you can!",
     "START GAME": "START GAME",
-    "red": "strawberry",
-    "yellow": "lemon",
-    "purple": "prune",
-    "green": "kiwi",
-    "blue": "blueberry"
+    "RESTART GAME": "RESTART GAME",
+    "LOADING": "LOADING",
+    "game": "game",
+    "over": "over"
 }

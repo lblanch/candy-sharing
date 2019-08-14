@@ -1,11 +1,10 @@
 import Painter from './Painter.js';
 import CandyBag from './CandyBag.js';
 import GameHandling from './GameHandling.js';
-import i18n from '/lib/gettext.esm.js';
+import i18n from '../lib/gettext.esm.js';
 
 let canvas, canvasContext;
 let countingFramesFalling = 1;
-//let countingCandyWaves = 0;
 let countingFramesGenerating = 1;
 let countingSeconds = 1;
 let painter = null;
@@ -21,10 +20,9 @@ let gameStateMouseUpdate = null;
 
 //FRAMES_GENERATE_CANDIES needs to be bigger than FRAMES_MOVE_FALLING_CANDIES,
 //so the candies fall faster than are being generated
-const FRAMES_GENERATE_CANDIES = 100; 
-const FRAMES_MOVE_FALLING_CANDIES = 45;
+const FRAMES_GENERATE_CANDIES = 70; 
+const FRAMES_MOVE_FALLING_CANDIES = 35;
 const FRAMES_PER_SECOND = 30;
-//const CANDY_WAVES = 6;
 
 //5 min = 300 sec
 const TIMER_SEC = 60;
@@ -34,19 +32,20 @@ window.onload = function () {
     translator = new i18n();
     //translator.setLocale('es_ES');
     
-    loadJSON('lang/' + translator.getLocale() + '.json', function(response) {
-        translator.loadJSON(response);
-    });
-    
     canvas = document.getElementById('gameCanvas');
     canvasContext = canvas.getContext('2d');
 
     painter = new Painter(canvasContext, document);
 
-    //show message while we do image loading
+    //show message while we do image and language loading
     painter.colorRect(0, 0, canvas.width, canvas.height, 'black');
     painter.colorText(_("LOADING"), canvas.width/2, canvas.height/2, 'red');
     
+    //load default language's JSON
+    loadJSON('lang/' + translator.getLocale() + '.json', function(response) {
+        translator.loadJSON(response);
+    });
+
     //define function to be called after loading the images, the one that starts de game
     painter.imageLoader.onDoneLoading(startGame);
     painter.loadGameImages();
@@ -58,6 +57,7 @@ window.onload = function () {
     gameHandler.initializeStartGameButton(205, 450);
     gameHandler.initializeResetGameButton(53, 180);
 
+    //listen for mouse clicks
     canvas.addEventListener('mouseup', mouseEvent);
     //document.addEventListener('keyup', pauseGame);
     gameState = startScreen;
@@ -89,16 +89,26 @@ function endScreen() {
 }
 
 function gameScreen() {
-    if(countingSeconds == FRAMES_PER_SECOND) {
-        if (timer == 0) {
+    //time is over, there's no candies left in the cady bag and no point messages to be shown => end game
+    if(timer == 0) {
+        if (candyBag.remainingCandies == 0 && gameHandler.inGameMessages.length == 0) {
             gameStateMouseUpdate = mouseEventEndGame;
             gameState = endScreen;
+        }
+    } else {
+        //only generate candies when there is still time on the timer
+        if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
+            candyBag.generateCandies();
+            countingFramesGenerating = 1;
         } else {
+            countingFramesGenerating++;
+        }
+    }
+
+    if(countingSeconds == FRAMES_PER_SECOND) {
+        if (timer > 0) {
             countingSeconds = 0;
             timer--;
-            if(gameHandler.friendMoodPoints > 0) {
-                gameHandler.friendMoodPoints--;
-            }
         }
     }
 
@@ -109,21 +119,13 @@ function gameScreen() {
         countingFramesFalling++;
     }
 
-    //if(countingCandyWaves < CANDY_WAVES) {
-        if (countingFramesGenerating == FRAMES_GENERATE_CANDIES) {
-            //countingCandyWaves++;
-            candyBag.generateCandies();
-            countingFramesGenerating = 1;
-        } else {
-            countingFramesGenerating++;
-        }
-    //}
     countingSeconds++;
     painter.drawBackground();
     gameHandler.drawLanguageSelector();
     candyBag.drawCandyBag();
     gameHandler.drawTimer(timer, 138, 20);
-    gameHandler.drawFriendUI(290, 90);
+    gameHandler.drawFriendUI();
+    gameHandler.drawInGameMessages();
 }
 
 function mouseEvent(event) {
@@ -138,22 +140,27 @@ function mouseEvent(event) {
 
 function mouseEventDuringGame(mouseX, mouseY) {
     let {eatenCount, eatenColor} = candyBag.processClickedBagPosition(mouseX, mouseY);
+    let points = 0;
+    let pointsMessage = "+";
+
     if (eatenCount == 0) {
         processLanguageChange(gameHandler.processClickedLanguages(mouseX, mouseY));
     } else {
-        gameHandler.calculatePoints(eatenCount, eatenColor);
+        points = gameHandler.calculatePoints(eatenCount, eatenColor);
+        pointsMessage += points + "!";
+        gameHandler.addInGameMessage(pointsMessage, mouseX, mouseY, points);
+        if (eatenCount > 3) {
+            pointsMessage = eatenCount+"x COMBO!";
+            gameHandler.addInGameMessage(pointsMessage, mouseX, mouseY+30, points);
+        }
     }
-
-    /*if(candyBag.remainingCandies == 0) {
-        gameStateMouseUpdate = mouseEventEndGame;
-        gameState = endScreen;
-    }*/
 }
 
 function mouseEventEndGame(mouseX, mouseY) {
     if(gameHandler.resetButton.isWithin(mouseX, mouseY)) {
+        //reset the game and get back to start screen
+        countingSeconds = 0;
         countingFramesFalling = 1;
-        //countingCandyWaves = 0;
         countingFramesGenerating = 1;
         candyBag.reset();
         gameHandler.reset();
