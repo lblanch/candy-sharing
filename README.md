@@ -10,7 +10,7 @@ I didn't do any of the art or assets of the game, you can find the original arti
 
 ## Installation
 
-If you simply want to play the game, its latest version is playable [here](http://lblanch.com/games/candy).
+If you simply want to play the game, its latest version is playable [here](https://lblanch.com/games/candy).
 
 Otherwise, just download the files and locate them in your server. If you want to execute it locally, you will need to use a local server. A couple of easy options I have used are [Python's http.server](https://docs.python.org/3.9/library/http.server.html#http-server-cli) and [Visual Studio Code's extension Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer).
 
@@ -18,7 +18,7 @@ Otherwise, just download the files and locate them in your server. If you want t
 
 You and your friend just bought candy bags! Eat and exchange candies with your buddy in order to make as many points as you can. 
 
-![Gameplay example](http://lblanch.com/games/candy/gameplay.gif)
+![Gameplay example](https://lblanch.com/games/candy/gameplay.gif)
 
 Points are awarded for each candy you click on, and any candy of the same flavour adjacent to the one you selected will be taken at the same time, and will award you with extra points! 
 You will also get extra points by eating candies of your favourite flavour, and if you click on a candy with your friend's favourite flavour, you'll automatically send it to them. Make sure to keep them happy by sending candies their way often, so they will send you more candies of your favourite flavour too!
