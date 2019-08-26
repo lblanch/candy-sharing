@@ -1,4 +1,5 @@
 import Candy from "./Candy.js";
+import { CANDY_COLORS_COLS } from "./Candy.js";
 import { getRandomInt } from "./main.js";
 import { TILE_SIZE_W, TILE_SIZE_H } from "./Painter.js";
 
@@ -20,26 +21,52 @@ class CandyBag {
         this.lowestFreeSpace = new Array(CANDY_BAG_COLS);
         this.painter = painter;
         this.remainingCandies = 0;
+        this.candiesGenerationProb = new Array(CANDY_COLORS_COLS.length);
+        this.candiesGenerationSum = new Array(CANDY_COLORS_COLS.length);
     }
 
     reset() {
+        let auxArray = new Array(CANDY_COLORS_COLS.length);
+        this.candiesGenerationProb.fill(100/CANDY_COLORS_COLS.length);
+        this.candiesGenerationProb.reduce(function(a,b,i) { return auxArray[i] = a+b; },0);
+        this.candiesGenerationSum = auxArray;
         this.candyBag.fill(null);
         this.lowestFreeSpace = [0 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1)), 1 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1)), 
                                 2 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1)), 3 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1)), 
                                 4 + (CANDY_BAG_COLS*(CANDY_BAG_ROWS-1))];
     }
-    
+
     prefillCandybag() {
         let bagIndex;
         
         for (let col = 0; col < CANDY_BAG_COLS; col++) {
             for(let row=CANDY_BAG_ROWS-1; row > CANDY_BAG_PREFILLED_ROWS; row--) {
                 bagIndex = row*CANDY_BAG_COLS+col;
-                this.candyBag[bagIndex] = new Candy();
-                this.candyBag[bagIndex].isFalling = false;
+                this.candyBag[bagIndex] = new Candy(undefined, undefined, false);
                 this.remainingCandies++;
             }
         }
+    }
+
+    calculateCandyProbabilities (friendFavCandy, playerFavCandy, friendMood, friendMaxMoods) {
+        let maxDivisions = 100/(CANDY_COLORS_COLS.length + friendMaxMoods + 3); //3 for fixed friend prob
+        let friendProb = 4 * maxDivisions;
+        let playerProb = maxDivisions*Math.floor(friendMood/10) + 2*maxDivisions;
+        let otherProb = (100-friendProb-playerProb)/(CANDY_COLORS_COLS.length-2);
+        let auxArray = new Array(CANDY_COLORS_COLS.length);
+        for(let i=0; i < CANDY_COLORS_COLS.length; i++) {
+            if (i == CANDY_COLORS_COLS.indexOf(friendFavCandy)) {
+                this.candiesGenerationProb[i] = friendProb;
+            } else if(i == CANDY_COLORS_COLS.indexOf(playerFavCandy)) {
+                this.candiesGenerationProb[i] = playerProb;
+            } else {
+                this.candiesGenerationProb[i] = otherProb;
+            }
+            console.log(i + " prob " + this.candiesGenerationProb[i]);
+        }
+        this.candiesGenerationProb.reduce(function(a,b,i) { return auxArray[i] = a+b; },0);
+        this.candiesGenerationSum = auxArray;
+        console.log("sum Array " + this.candiesGenerationSum);
     }
 
     generateCandies() {
@@ -47,6 +74,8 @@ class CandyBag {
         let indexInGeneratedPosition;
         let stopGenerating = false;
         let auxArray = new Array(CANDY_BAG_COLS);
+        let auxCandy;
+        let randomCandyProb;
         
         for (let i = 0; i < CANDY_BAG_COLS; i++) {
             auxArray[i] = i;
@@ -57,19 +86,34 @@ class CandyBag {
         }
 
         if (!stopGenerating) {
+            //TODO optimize by avoiding splice and using pop (remove last element from array)
             for (let j = 0; j < GENERATE_CANDIES_AMOUNT; j++) {
                 generatedPosition = getRandomInt(auxArray.length);
                 indexInGeneratedPosition = auxArray[generatedPosition];
                 auxArray.splice(generatedPosition,1);
-                this.candyBag[indexInGeneratedPosition] = new Candy();
+                randomCandyProb = this.generateRandomCandyByProb(Math.random()*100);
+                auxCandy = new Candy(undefined, CANDY_COLORS_COLS[randomCandyProb]);
+                
+                this.candyBag[indexInGeneratedPosition] = auxCandy;
             }
             this.remainingCandies += GENERATE_CANDIES_AMOUNT;
         }
     }
     
+    generateRandomCandyByProb(randomNum) {
+        let i = 0;
+        for(i=0; i < this.candiesGenerationSum.length-1; i++) {
+            if(randomNum <= this.candiesGenerationSum[i]) {
+                return i;
+            }
+        }
+        return i;
+    }
+
     processClickedBagPosition(mouseX, mouseY) {
         let eatenCandies = 0;
         let eatenColor = null;
+        //if we clicked within the candy bag
         if ((mouseX > BAG_LEFT_CORNER_X && mouseX <= ((CANDY_BAG_COLS * TILE_SIZE_W) + BAG_LEFT_CORNER_X)) && 
             (mouseY > BAG_LEFT_CORNER_Y && mouseY <= ((CANDY_BAG_ROWS * TILE_SIZE_H) + BAG_LEFT_CORNER_Y))) {
                 let clickedX = Math.floor((mouseX - BAG_LEFT_CORNER_X)/TILE_SIZE_W);
@@ -173,7 +217,7 @@ class CandyBag {
                 if (auxCandy != null) {
                     this.drawStaticCandy(auxCandy, drawAtX, drawAtY, bagIndex);
                 }
-                this.painter.colorText(row + "-" + col, drawAtX+ 10, drawAtY + 10, undefined, "10px");
+                //this.painter.colorText(row + "-" + col, drawAtX+ 10, drawAtY + 10, undefined, "10px");
             }
         }
         this.drawExplosions();

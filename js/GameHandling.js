@@ -312,10 +312,11 @@ class GameHandling {
             if (eatenColor == this.friendFavCandy.candyColor) {
                 this.friendFavCandyCount += eatenCount;
                 this.friendMoodPoints += (eatenCount * 5);
+                //TODO substitute min and max friend mood amounts with variables based on amount of moods in friend status array
                 if (this.friendMoodPoints > 49) {
                     this.friendMoodPoints = 49;
                 }
-            } else if(this.friendMoodPoints > 0) {
+            } else if(this.friendMoodPoints > 3) {
                 this.friendMoodPoints-=3;
             } 
         }
@@ -332,6 +333,10 @@ class GameHandling {
         }
 
         return fileNames;
+    }
+
+    static getFriendMoodAmount() {
+        return FRIEND_STATUS.length;
     }
 }
 

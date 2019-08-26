@@ -12,24 +12,12 @@ class Candy {
     constructor(type = CANDY_TYPES_ROWS[getRandomInt(CANDY_TYPES_ROWS.length)], color = CANDY_COLORS_COLS[getRandomInt(CANDY_COLORS_COLS.length)], falling = true) {
         this.isMoved = false;
         this.candyType = type;
-        this._candyColor = color;
+        this.candyColor = color;
         this.isFalling = falling;
         this.isEaten = 0;
         this.indexExplosion = -1;
         this.candyPicIndex = CANDY_TYPES_ROWS.indexOf(this.candyType) * CANDY_COLORS_COLS.length + CANDY_COLORS_COLS.indexOf(this.candyColor);
         this.explosionPicIndex = (CANDY_COLORS_COLS.indexOf(this.candyColor)*CANDY_EXPLOSIONS_FRAMES) + (CANDY_COLORS_COLS.length * CANDY_TYPES_ROWS.length) - 1;
-    }
-
-    set candyColor(value) {
-        if (value < 0 || value >= CANDY_COLORS_COLS.length) {
-            throw new Error("Color out of bounds");
-        }
-        this._candyColor = value;
-        this.candyPicIndex = CANDY_TYPES_ROWS.indexOf(this.candyType) * CANDY_COLORS_COLS.length + CANDY_COLORS_COLS.indexOf(this.candyColor);
-    }
-
-    get candyColor() {
-        return this._candyColor;
     }
 
     static generateCandyFilenames() {

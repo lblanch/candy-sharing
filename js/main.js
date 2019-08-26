@@ -147,6 +147,7 @@ function mouseEventDuringGame(mouseX, mouseY) {
         processLanguageChange(gameHandler.processClickedLanguages(mouseX, mouseY));
     } else {
         points = gameHandler.calculatePoints(eatenCount, eatenColor);
+        candyBag.calculateCandyProbabilities(gameHandler.friendFavCandy.candyColor, gameHandler.playerFavCandy.candyColor, gameHandler.friendMoodPoints, GameHandling.getFriendMoodAmount());
         pointsMessage += points + "!";
         gameHandler.addInGameMessage(pointsMessage, mouseX, mouseY, points);
         if (eatenCount > 3) {
@@ -177,6 +178,7 @@ function mouseEventStartGame(mouseX, mouseY) {
             candyBag.prefillCandybag();
             gameHandler.updatePlayerFavoriteCandy();
             gameHandler.generateRandomFriend();
+            candyBag.calculateCandyProbabilities(gameHandler.friendFavCandy.candyColor, gameHandler.playerFavCandy.candyColor, gameHandler.friendMoodPoints, GameHandling.getFriendMoodAmount());
             gameStateMouseUpdate = mouseEventDuringGame;
             gameState = gameScreen;
             timer = TIMER_SEC;

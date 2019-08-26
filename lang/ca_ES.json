@@ -12,5 +12,10 @@
     "RESTART GAME": "REINICIAR JOC",
     "LOADING": "CARREGANT",
     "game": "fi del",
-    "over": "joc"
+    "over": "joc",
+    "red": "maduixa",
+    "yellow": "llimona",
+    "purple": "mora",
+    "green": "kiwi",
+    "blue": "neviu"
 }

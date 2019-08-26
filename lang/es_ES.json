@@ -12,5 +12,10 @@
     "RESTART GAME": "REINICIAR JUEGO",
     "LOADING": "CARGANDO",
     "game": "fin del",
-    "over": "juego"
+    "over": "juego",
+    "red": "fresa",
+    "yellow": "limón",
+    "purple": "mora",
+    "green": "kiwi",
+    "blue": "arandano"
 }

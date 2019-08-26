@@ -12,5 +12,10 @@
     "RESTART GAME": "RESTART GAME",
     "LOADING": "LOADING",
     "game": "game",
-    "over": "over"
+    "over": "over",
+    "red": "strawberry",
+    "yellow": "lemon",
+    "purple": "prune",
+    "green": "kiwi",
+    "blue": "blueberry"
 }
